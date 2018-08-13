@@ -1,0 +1,23 @@
+{
+  "name": "peristaltic_pump_design",
+  "version": "1.0.0",
+  "description": "peristaltic pump 3D desing with open js cad",
+  "main": "peristaltic_pump.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "persitaltic",
+    "pump"
+  ],
+  "author": "Juan F. Mosquera (juanfmx2@gmail.com)",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@jscad/cli": "^1.8.4",
+    "browserify": "^16.2.2",
+    "coffeescript": "^2.3.1"
+  },
+  "devDependencies": {
+    "coffeeify": "^3.0.1"
+  }
+}
