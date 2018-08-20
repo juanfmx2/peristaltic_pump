@@ -46,7 +46,7 @@ class ScrewType
       {r:inner_radius*1.01, h:screw_length+threading.pitch, center:[true, true, false]}
     ).rotateY(90)
     slicing_angle = 10.0
-    loops = 1 #(screw_length+threading.pitch)/threading.pitch
+    loops = (screw_length+threading.pitch)/threading.pitch
     num_slices = Math.ceil(360 * loops / slicing_angle)+1
     slices_x_dist = threading.pitch * slicing_angle/360
 
