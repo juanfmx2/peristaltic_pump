@@ -37,13 +37,13 @@ class ScrewType
     threading_tip_height = threading.h*5/8
     inner_radius = max_radius-threading_tip_height
     thread_head = CSG.Polygon.createFromPoints([
-      [threading.pitch*3/8, inner_radius],
+      [threading.pitch/2, inner_radius-threading.h/8],
       [threading.pitch/4, max_radius],
       [-threading.pitch/4,  max_radius],
-      [-threading.pitch*3/8, inner_radius]
+      [-threading.pitch/2, inner_radius-threading.h/8]
     ])
     inner_cylinder = cylinder(
-      {r:inner_radius*1.01, h:screw_length+threading.pitch, center:[true, true, false]}
+      {r:inner_radius, h:screw_length+threading.pitch, center:[true, true, false]}
     ).rotateY(90)
     slicing_angle = 10.0
     loops = (screw_length+threading.pitch)/threading.pitch
