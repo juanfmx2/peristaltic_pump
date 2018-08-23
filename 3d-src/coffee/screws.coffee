@@ -74,17 +74,17 @@ class ScrewType
       {r:inner_radius, h:screw_length+threading.pitch, center:[true, true, false]}
     ).rotateY(90)
 
-    num_coil_loops = screw_length/threading.pitch
+    num_coil_loops = Math.ceil(screw_length/threading.pitch)
     coil_loop = @__get_coil_loop(fine)
     screw = coil_loop
     for i in [1..num_coil_loops]
-      screw = screw.unionForNonIntersecting(coil_loop.translate([i*threading.pitch, 0, 0]))
-
-    trimming_cyl = cylinder({r: max_radius + 0.1, h:threading.pitch, center:true}).rotateY(90)
+      coil_loop_i = coil_loop.translate([i*threading.pitch, 0, 0])
+      if i == num_coil_loops
+        trimming_cyl = cylinder({r: max_radius + 0.1, h:threading.pitch, center:[true, true, false]}).rotateY(90)
+        coil_loop_i = difference(coil_loop_i, trimming_cyl.translate([screw_length+threading.pitch, 0, 0]))
+      screw = screw.unionForNonIntersecting(coil_loop_i)
 
     screw = screw.unionForNonIntersecting inner_cylinder
-#    screw = difference(screw, trimming_cyl)
-#    screw = difference(screw, trimming_cyl.translate([screw_length+threading.pitch, 0, 0]))
     return screw.translate([0, 0, 0]).rotateY(-90)
 
   draw_screw: (params)->
@@ -106,7 +106,7 @@ class ScrewType
     if not params.grub_screw
       head = cylinder({r:@head_diameter/2.0, h:@head_height, center:[true, true, false]})
         .translate([0, 0, params.screw_length])
-      screw = screw.unionForNonIntersecting head
+#      screw = screw.unionForNonIntersecting head
     return screw
 
 
