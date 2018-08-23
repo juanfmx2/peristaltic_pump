@@ -37,8 +37,8 @@ class ScrewType
     inner_radius = max_radius-threading.h*5/8
     thread_head = CSG.Polygon.createFromPoints([
       [threading.pitch/2, inner_radius-threading.h/8],
-      [threading.pitch/4, max_radius],
-      [-threading.pitch/4,  max_radius],
+      [threading.pitch/8, max_radius],
+      [-threading.pitch/8,  max_radius],
       [-threading.pitch/2, inner_radius-threading.h/8]
     ])
     slicing_angle = 10.0
