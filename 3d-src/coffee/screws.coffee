@@ -31,36 +31,61 @@ class ScrewType
     }
     ScrewType.known_screws_data[@name] = @
 
-  __draw_screw_threading: (screw_length, fine=true)->
+  __draw_coil_loop: (fine=true)->
     threading = if fine then @thread_data.fine else @thread_data.coarse
     max_radius = @diameter/2.0
-    threading_tip_height = threading.h*5/8
-    inner_radius = max_radius-threading_tip_height
+    inner_radius = max_radius-threading.h*5/8
     thread_head = CSG.Polygon.createFromPoints([
       [threading.pitch/2, inner_radius-threading.h/8],
       [threading.pitch/4, max_radius],
       [-threading.pitch/4,  max_radius],
       [-threading.pitch/2, inner_radius-threading.h/8]
     ])
-    inner_cylinder = cylinder(
-      {r:inner_radius, h:screw_length+threading.pitch, center:[true, true, false]}
-    ).rotateY(90)
     slicing_angle = 10.0
-    loops = (screw_length+threading.pitch)/threading.pitch
-    num_slices = Math.ceil(360 * loops / slicing_angle)+1
+    offset_angle = 180
+    offset_start = Math.ceil(offset_angle/slicing_angle)
+    num_slices = offset_start + Math.ceil((360+offset_angle)/slicing_angle)
     slices_x_dist = threading.pitch * slicing_angle/360
 
     coil = thread_head.solidFromSlices
       numslices: num_slices,
       callback: (t, slice) ->
-        return @translate([slice * slices_x_dist, 0, 0]).rotateX(slicing_angle * slice)
+        cur_slice = slice-offset_start
+        return @translate([cur_slice * slices_x_dist, 0, 0]).rotateX(slicing_angle * cur_slice)
 
     trimming_cyl = cylinder({r: max_radius + 0.1, h:threading.pitch, center:true}).rotateY(90)
 
-    screw = union(coil, inner_cylinder)
-    screw = difference(screw, trimming_cyl)
-    screw = difference(screw, trimming_cyl.translate([screw_length+threading.pitch, 0, 0]))
-    return screw.translate([-threading.pitch/2.0, 0, 0]).rotateY(-90)
+    coil = difference(coil, trimming_cyl.translate([-threading.pitch/2, 0 ,0]))
+    coil = difference(coil, trimming_cyl.translate([3*threading.pitch/2, 0 ,0]))
+    return coil
+
+  __get_coil_loop: (fine=true)->
+    thread_path = if fine then 'fine' else 'coarse'
+    if not _.has(@thread_data[thread_path], '__coil_geom')
+      @thread_data[thread_path]['__coil_geom'] = @__draw_coil_loop(fine)
+    return @thread_data[thread_path]['__coil_geom']
+
+
+  __draw_screw_threading: (screw_length, fine=true)->
+    threading = if fine then @thread_data.fine else @thread_data.coarse
+    max_radius = @diameter/2.0
+    inner_radius = max_radius-threading.h*5/8
+    inner_cylinder = cylinder(
+      {r:inner_radius, h:screw_length+threading.pitch, center:[true, true, false]}
+    ).rotateY(90)
+
+    num_coil_loops = screw_length/threading.pitch
+    coil_loop = @__get_coil_loop(fine)
+    screw = coil_loop
+    for i in [1..num_coil_loops]
+      screw = screw.unionForNonIntersecting(coil_loop.translate([i*threading.pitch, 0, 0]))
+
+    trimming_cyl = cylinder({r: max_radius + 0.1, h:threading.pitch, center:true}).rotateY(90)
+
+    screw = screw.unionForNonIntersecting inner_cylinder
+#    screw = difference(screw, trimming_cyl)
+#    screw = difference(screw, trimming_cyl.translate([screw_length+threading.pitch, 0, 0]))
+    return screw.translate([0, 0, 0]).rotateY(-90)
 
   draw_screw: (params)->
     if !_.isObject params
@@ -81,7 +106,7 @@ class ScrewType
     if not params.grub_screw
       head = cylinder({r:@head_diameter/2.0, h:@head_height, center:[true, true, false]})
         .translate([0, 0, params.screw_length])
-      screw = union(screw, head)
+      screw = screw.unionForNonIntersecting head
     return screw
 
 
@@ -93,6 +118,7 @@ global.getParameterDefinitions = ->
   return []
 
 global.main = (params)->
+  t0 = performance.now()
   screw_types_keys = _.keys ScrewType.known_screws_data
   all_screws = []
   max_screw_diameter = 0
@@ -115,4 +141,6 @@ global.main = (params)->
     cur_y += separation
     console.debug('Finished! '+s_t_key_i)
 
+  t1 = performance.now()
+  alert('Time: '+(t1-t0)/1000)
   return all_screws
