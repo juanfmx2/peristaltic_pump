@@ -4,6 +4,7 @@
 # tags       : screws
 # file       : screws.coffee
 _ = require 'underscore'
+util = require './util.coffee'
 
 class ScrewType
   @known_screws_data = {}
@@ -14,7 +15,7 @@ class ScrewType
     new ScrewType('M2.5', 2.5,  5.0,  4.5, 2.5, 0.45, 0.35)
     new ScrewType('M3'  , 3.0,  5.5,  5.5, 3.0, 0.50, 0.35)
     new ScrewType('M4'  , 4.0,  7.0,  7.0, 4.0, 0.70, 0.50)
-    new ScrewType('M5'  , 5.0,  8.0,  8.5, 8.0, 0.80, 0.50)
+    new ScrewType('M5'  , 5.0,  8.0,  8.5, 5.0, 0.80, 0.50)
     new ScrewType('M6'  , 6.0, 10.0, 10.0, 6.0, 1.00, 0.75)
 
   # Screw data and geometry based on https://en.wikipedia.org/wiki/ISO_metric_screw_thread
@@ -66,7 +67,7 @@ class ScrewType
     return @thread_data[thread_path]['__coil_geom']
 
 
-  __draw_screw_threading: (screw_length, fine=true)->
+  __draw_screw_threading: (screw_length, fine=true, use_non_intersecting_union=true)->
     threading = if fine then @thread_data.fine else @thread_data.coarse
     max_radius = @diameter/2.0
     inner_radius = max_radius-threading.h*5/8
@@ -82,9 +83,14 @@ class ScrewType
       if i == num_coil_loops
         trimming_cyl = cylinder({r: max_radius + 0.1, h:threading.pitch, center:[true, true, false]}).rotateY(90)
         coil_loop_i = difference(coil_loop_i, trimming_cyl.translate([screw_length+threading.pitch, 0, 0]))
-      screw = screw.unionForNonIntersecting(coil_loop_i)
-
-    screw = screw.unionForNonIntersecting inner_cylinder
+      if use_non_intersecting_union
+        screw = screw.unionForNonIntersecting coil_loop_i
+      else
+        screw = screw.union coil_loop_i
+    if use_non_intersecting_union
+      screw = screw.unionForNonIntersecting inner_cylinder
+    else
+      screw = screw.union inner_cylinder
     return screw.translate([0, 0, 0]).rotateY(-90)
 
   draw_screw: (params)->
@@ -96,6 +102,7 @@ class ScrewType
       grub_screw: false
       placeholder: false
       fine: true
+      hex_head: false
     })
 
     screw = null
@@ -104,43 +111,77 @@ class ScrewType
     else
       screw = @__draw_screw_threading(params.screw_length, params.fine)
     if not params.grub_screw
-      head = cylinder({r:@head_diameter/2.0, h:@head_height, center:[true, true, false]})
-        .translate([0, 0, params.screw_length])
-#      screw = screw.unionForNonIntersecting head
+      head = null
+      if params.hex_head
+        head = util.create_extruded_regular_polygon(@nut_diameter/2, @head_height, 6)
+      else
+        head = cylinder({r:@head_diameter/2.0, h:@head_height, center:[true, true, false]})
+
+      screw = screw.unionForNonIntersecting(head.translate([0, 0, params.screw_length]))
+
+    screw = screw.center().rotateX(180).translate([0, 0, (params.screw_length+@head_height)/2])
     return screw
 
+  draw_nut: (params)->
+    if !_.isObject params
+      params = {}
+
+    params = _.defaults(params, {
+      placeholder: false
+      fine: true
+      height: @head_height
+    })
+
+    nut = util.create_extruded_regular_polygon(@nut_diameter/2, @head_height, 6)
+    if params.placeholder
+      return nut
+    else
+      screw_coil = @__draw_screw_threading(params.height, params.fine, false).scale([1.01, 1.01, 1])
+      nut = difference(nut, screw_coil)
+    return nut
 
 ScrewType.load_m_iso_data()
 
-#console.log(Screw.known_screws_data)
+exports.available_screw_types = ScrewType.known_screws_data
 
 global.getParameterDefinitions = ->
-  return []
+  return [
+    {name: 'draw_placeholders', type: 'boolean', initial: 4, step: 0.25, caption: 'Arms Shaft radius'}
+    {
+      name: 'screws_to_draw'
+      type: 'choice'
+      caption: 'Screw Set to Draw'
+      values: ['All'].concat _.values(ScrewType.known_screws_data)
+      captions: [null].concat _.keys(ScrewType.known_screws_data)
+      initial: 'All'
+    }
+  ]
 
 global.main = (params)->
   t0 = performance.now()
   screw_types_keys = _.keys ScrewType.known_screws_data
   all_screws = []
-  max_screw_diameter = 0
-  for s_t_key_i in screw_types_keys
-    screw = ScrewType.known_screws_data[s_t_key_i]
-    max_screw_diameter = Math.max(max_screw_diameter, screw.head_diameter)
-
-  separation = max_screw_diameter + 1
 
   cur_y = 0
 
   for s_t_key_i in screw_types_keys
     console.debug('Starting '+s_t_key_i)
     screw = ScrewType.known_screws_data[s_t_key_i]
+    separation =  screw.nut_diameter + 2
     all_screws.push(
       screw.draw_screw({screw_length:2*screw.diameter, placeholder:true}).translate([0, cur_y, 0])
     )
     all_screws.push screw.draw_screw({screw_length:2*screw.diameter}).translate([separation, cur_y, 0])
-    all_screws.push screw.draw_screw({screw_length:2*screw.diameter, fine:false}).translate([2*separation, cur_y, 0])
+    all_screws.push(
+      screw.draw_screw({screw_length:2*screw.diameter, fine:false, hex_head: true}).translate([2*separation, cur_y, 0])
+    )
+    # Nuts
+    all_screws.push screw.draw_nut({placeholder:true}).translate([-separation, cur_y, 0])
+    all_screws.push screw.draw_nut().translate([-2*separation, cur_y, 0])
+    all_screws.push screw.draw_nut({fine:false}).translate([-3*separation, cur_y, 0])
     cur_y += separation
     console.debug('Finished! '+s_t_key_i)
 
   t1 = performance.now()
-  alert('Time: '+(t1-t0)/1000)
+  console.debug('Time: '+(t1-t0)/1000)
   return all_screws
