@@ -146,14 +146,19 @@ exports.available_screw_types = ScrewType.known_screws_data
 
 global.getParameterDefinitions = ->
   return [
-    {name: 'draw_placeholders', type: 'boolean', initial: 4, step: 0.25, caption: 'Arms Shaft radius'}
     {
-      name: 'screws_to_draw'
+      name: 'draw_placeholders'
+      type: 'choice'
+      caption: 'Draw Placeholders'
+      values: ['No', 'Yes']
+      initial: 'Yes'
+    }
+    {
+      name: 'screw_set_to_draw'
       type: 'choice'
       caption: 'Screw Set to Draw'
-      values: ['All'].concat _.values(ScrewType.known_screws_data)
-      captions: [null].concat _.keys(ScrewType.known_screws_data)
-      initial: 'All'
+      values: ['ALL'].concat _.keys(ScrewType.known_screws_data)
+      initial: 'M3'
     }
   ]
 
@@ -161,27 +166,36 @@ global.main = (params)->
   t0 = performance.now()
   screw_types_keys = _.keys ScrewType.known_screws_data
   all_screws = []
+  params.draw_placeholders = params.draw_placeholders=='Yes'
 
-  cur_y = 0
-
-  for s_t_key_i in screw_types_keys
-    console.debug('Starting '+s_t_key_i)
-    screw = ScrewType.known_screws_data[s_t_key_i]
+  draw_screw_set = (screw, y_location, draw_placeholders)->
+    console.debug('Starting '+screw.name)
     separation =  screw.nut_diameter + 2
+    all_screws.push screw.draw_screw({screw_length:2*screw.diameter}).translate([0, y_location, 0])
     all_screws.push(
-      screw.draw_screw({screw_length:2*screw.diameter, placeholder:true}).translate([0, cur_y, 0])
-    )
-    all_screws.push screw.draw_screw({screw_length:2*screw.diameter}).translate([separation, cur_y, 0])
-    all_screws.push(
-      screw.draw_screw({screw_length:2*screw.diameter, fine:false, hex_head: true}).translate([2*separation, cur_y, 0])
+      screw.draw_screw({screw_length:2*screw.diameter, fine:false, hex_head: true})\
+        .translate([separation, y_location, 0])
     )
     # Nuts
-    all_screws.push screw.draw_nut({placeholder:true}).translate([-separation, cur_y, 0])
-    all_screws.push screw.draw_nut().translate([-2*separation, cur_y, 0])
-    all_screws.push screw.draw_nut({fine:false}).translate([-3*separation, cur_y, 0])
-    cur_y += separation
+    all_screws.push screw.draw_nut().translate([-separation, y_location, 0])
+    all_screws.push screw.draw_nut({fine:false}).translate([-2*separation, y_location, 0])
+    # Placeholders
+    if draw_placeholders
+      all_screws.push(
+        screw.draw_screw({screw_length:2*screw.diameter, placeholder:true}).translate([2*separation, y_location, 0])
+      )
+      all_screws.push screw.draw_nut({placeholder:true}).translate([-3*separation, y_location, 0])
+
     console.debug('Finished! '+s_t_key_i)
 
+  if params.screw_set_to_draw == 'ALL'
+    cur_y = 0
+    for s_t_key_i in screw_types_keys
+      screw_i = ScrewType.known_screws_data[s_t_key_i]
+      draw_screw_set(screw_i, cur_y, params.draw_placeholders)
+      cur_y += screw_i.nut_diameter + 2
+  else
+    draw_screw_set(ScrewType.known_screws_data[params.screw_set_to_draw], 0, params.draw_placeholders)
   t1 = performance.now()
   console.debug('Time: '+(t1-t0)/1000)
   return all_screws
