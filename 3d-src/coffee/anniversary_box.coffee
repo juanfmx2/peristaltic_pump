@@ -3,6 +3,7 @@
 # license    : GNU GENERAL PUBLIC LICENSE v3
 # tags       : anniversary, Anna Kuroshchenkova, Juan Felipe Mosquera Morales
 # file       : anniversary_box.coffee
+util = require './util.coffee'
 
 get_heart_polygon = (heart_radius)->
   half_heart = new CSG.Path2D([[0, 0], [0, 3*heart_radius]], false)
@@ -41,17 +42,28 @@ get_extruded_dove_tail_rails = (front_polygon, box_width)->
     translate([box_width, box_width, 0], extruded_p.rotateZ(180))
   ]
 
-get_top_box = (box_width, top_height, heart_radius, clearance, heart_offset)->
-  heart = get_heart_polygon(heart_radius + clearance/2)
+get_top_box = (params, box_width, box_height, clearance, heart_offset)->
+  top_height = box_height*2/3
+  heart = get_heart_polygon(params.heart_radius + clearance/2)
   heart_box = cube({size:[box_width, box_width, top_height-clearance/2], round: true}).translate([0, 0, clearance/2])
   dovetail_rails = get_extruded_dove_tail_rails(heart, box_width)
+  top_box = difference(
+    heart_box,
+    dovetail_rails[0].translate([0, 0, -heart_offset]),
+    dovetail_rails[1].translate([0, 0, -heart_offset])
+  ).translate([0, 0, box_height/3])
+
+  ak_text = util.create_extruded_text('AK', 2*params.heart_radius, 2, params.text_depth).rotateX(90)
+    .translate([box_width*7/12, params.text_depth, box_height/2])
+  jf_text = util.create_extruded_text('JF', 2*params.heart_radius, 2, params.text_depth).rotateX(90).rotateZ(180)
+    .translate([box_width*5/12, box_width-params.text_depth, box_height/2])
+  ayear_text = util.create_extruded_text('86', 2*params.heart_radius, 2, params.text_depth).rotateX(90).rotateZ(90)
+    .translate([box_width-params.text_depth, box_width*1/12, box_height/2])
+  jyear_text = util.create_extruded_text('89', 2*params.heart_radius, 2, params.text_depth).rotateX(90).rotateZ(270)
+    .translate([params.text_depth, box_width*11/12, box_height/2])
+  top_box = difference(top_box, ak_text, jf_text, ayear_text, jyear_text)
   return color(
-    'yellow',
-    difference(
-      heart_box,
-      dovetail_rails[0].translate([0, 0, -heart_offset]),
-      dovetail_rails[1].translate([0, 0, -heart_offset])
-    )
+    'yellow',top_box
   )
 
 get_bottom_box = (box_width, bottom_height, heart_radius, clearance, heart_offset)->
@@ -84,6 +96,13 @@ global.getParameterDefinitions = ->
       caption: 'Heart Radius'
     }
     {
+      name: 'text_depth',
+      type: 'float',
+      initial: 2.5,
+      step: 0.25,
+      caption: 'Text Depth'
+    }
+    {
       name: 'anna_finger_perimeter',
       type: 'float',
       initial: 5,
@@ -101,18 +120,15 @@ global.getParameterDefinitions = ->
   return params_definition
 
 global.main = (params)->
-  base_heart_radius = params.heart_radius
   parts_clearance = 0.25
-  box_width = 10*base_heart_radius
-  box_height = 6*base_heart_radius
-  heart_offset = base_heart_radius
-  top_box = get_top_box(box_width, box_height*2/3, base_heart_radius, parts_clearance, heart_offset)\
-    .translate([0, 0, box_height/3])
-  bottom_box = get_bottom_box(box_width, box_height/3, base_heart_radius, parts_clearance, heart_offset)
-  inner_hole_radius = 3*base_heart_radius
+  box_width = 10*params.heart_radius
+  box_height = 6*params.heart_radius
+  heart_offset = params.heart_radius
+  top_box = get_top_box(params, box_width, box_height, parts_clearance, heart_offset)
+  bottom_box = get_bottom_box(box_width, box_height/3, params.heart_radius, parts_clearance, heart_offset)
+  inner_hole_radius = 3*params.heart_radius
   inner_hole = sphere({r: inner_hole_radius, fn: 100, type: 'geodesic'})\
     .translate([box_width/2, box_width/2, (box_height-inner_hole_radius)])
   top_box = difference(top_box, inner_hole)
   bottom_box = difference(bottom_box, inner_hole)
   return [top_box, bottom_box]
-
