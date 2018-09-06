@@ -5,11 +5,11 @@
 // license    : GNU GENERAL PUBLIC LICENSE v3
 // tags       : anniversary, Anna Kuroshchenkova, Juan Felipe Mosquera Morales
 // file       : anniversary_box.coffee
-var get_cat_lines, util;
+var util;
 
 util = require('./util.coffee');
 
-get_cat_lines = function() {
+exports.get_cat_lines = function() {
   var all_lines, lineRadius, line_0, line_1, line_10, line_11, line_12, line_13, line_14, line_15, line_16, line_2, line_3, line_4, line_5, line_6, line_7, line_8, line_9;
   lineRadius = 50;
   all_lines = [];
@@ -407,7 +407,7 @@ get_cat_lines = function() {
 
 global.main = function(params) {
   var cat_lines;
-  cat_lines = get_cat_lines();
+  cat_lines = exports.get_cat_lines();
   return [cat_lines, cube().translate([20, 0, 10]), cube().translate([0, 20, 10])];
 };
 
