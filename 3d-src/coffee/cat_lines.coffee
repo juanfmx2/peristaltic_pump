@@ -5,7 +5,7 @@
 # file       : anniversary_box.coffee
 util = require './util.coffee'
 
-get_cat_lines = ()->
+exports.get_cat_lines = ()->
   lineRadius = 50
   all_lines = []
   line_0 = new CSG.Path2D([[5604.944543222419,-8067.69113538227]],false)
@@ -398,7 +398,7 @@ get_cat_lines = ()->
   return linear_extrude({ height: 5 }, util.scale_to(union(all_lines), 100, 100)).center('x','y').rotateZ(180)
 
 global.main = (params)->
-  cat_lines = get_cat_lines()
+  cat_lines = exports.get_cat_lines()
   return [cat_lines,
     cube().translate([20,0,10]),
     cube().translate([0,20,10])
