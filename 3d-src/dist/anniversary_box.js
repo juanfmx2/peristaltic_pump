@@ -67,7 +67,7 @@ get_bottom_box = function(box_width, bottom_height, heart_radius, clearance, hea
 };
 
 get_ring = function(ring_perimeter, ring_height, ring_text) {
-  var delta_walls, inner_s, outer_s, r_shell, ring_radius, trimming_cube, trimming_cube_h;
+  var delta_walls, inner_s, outer_s, r_shell, ring_radius, text_geom, trimming_cube, trimming_cube_h;
   delta_walls = 2.5;
   ring_radius = ring_perimeter / (2 * Math.PI);
   inner_s = cylinder({
@@ -87,7 +87,8 @@ get_ring = function(ring_perimeter, ring_height, ring_text) {
     center: true
   });
   r_shell = difference(outer_s, inner_s, trimming_cube.translate([0, 0, (ring_height + trimming_cube_h) / 2]), trimming_cube.translate([0, 0, -(ring_height + trimming_cube_h) / 2]));
-  return r_shell;
+  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height * 0.5, 2, 3, ring_radius);
+  return union(r_shell, text_geom.translate([0, 0, ring_height * 0.25]));
 };
 
 get_rings = function(params) {
@@ -114,7 +115,7 @@ global.getParameterDefinitions = function() {
     {
       name: 'heart_radius',
       type: 'float',
-      initial: 6,
+      initial: 10,
       step: 0.25,
       caption: 'Heart Radius'
     },
@@ -632,6 +633,39 @@ exports.create_extruded_text = function(text, text_height, line_width, z_h) {
   text_dimensions = exports.get_object_dimensions(joined_text);
   scale_factor = text_height / text_dimensions.y;
   return scale([scale_factor, scale_factor, 1], joined_text);
+};
+
+exports.create_extruded_text_around_cylinder = function(text, text_height, line_width, text_depth, cyl_radius) {
+  var char_i, char_lines, cur_angle, extruded_char, extruded_positioned_text, i, len, scale_factor, text_dimensions, x_delta;
+  cur_angle = 0;
+  extruded_positioned_text = [];
+  for (i = 0, len = text.length; i < len; i++) {
+    char_i = text[i];
+    char_lines = vector_text(0, 0, char_i);
+    extruded_char = [];
+    char_lines.forEach(function(pl) {
+      return extruded_char.push(rectangular_extrude(pl, {
+        w: line_width,
+        h: text_depth
+      }));
+    });
+    text_dimensions = null;
+    if (extruded_char.length > 0) {
+      extruded_char = union(extruded_char);
+      text_dimensions = exports.get_object_dimensions(extruded_char);
+      scale_factor = text_height / text_dimensions.y;
+      extruded_char = extruded_char.scale([scale_factor, scale_factor, 1]);
+      text_dimensions = exports.get_object_dimensions(extruded_char);
+      // move half angle of current char before drawing
+      cur_angle += Math.atan(text_dimensions.x * 1.01 / (2 * cyl_radius)) * 180 / Math.PI;
+      extruded_char = extruded_char.center('x', 'y', 'z').translate([0, -text_dimensions.y / 2, text_dimensions.z / 2]).rotateX(90).translate([0, -cyl_radius, 0]).rotateZ(cur_angle);
+      extruded_positioned_text.push(extruded_char);
+    }
+    // move half angle of current char after drawing
+    x_delta = text_dimensions != null ? text_dimensions.x : text_height;
+    cur_angle += Math.atan(x_delta * 1.01 / (2 * cyl_radius)) * 180 / Math.PI;
+  }
+  return union(extruded_positioned_text);
 };
 
 exports.get_object_dimensions = function(geom_obj) {
