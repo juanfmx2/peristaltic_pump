@@ -35,7 +35,6 @@ exports.create_extruded_text_around_cylinder = (text, text_height, line_width, t
       text_dimensions = exports.get_object_dimensions extruded_char
       # move half angle of current char before drawing
       cur_angle +=  Math.atan(text_dimensions.x*1.01/(2*cyl_radius)) * 180 / Math.PI
-      console.warn(extruded_char.getBounds(), text_dimensions)
       extruded_char = extruded_char.center('x', 'y', 'z')
         .translate([0, -text_dimensions.y/2, text_dimensions.z/2]).rotateX(90)
         .translate([0, -cyl_radius, 0]).rotateZ(cur_angle)
