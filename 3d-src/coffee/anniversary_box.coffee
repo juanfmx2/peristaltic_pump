@@ -106,7 +106,8 @@ get_ring = (ring_perimeter, ring_height, ring_text)->
     trimming_cube.translate([0, 0, (ring_height+trimming_cube_h)/2]),
     trimming_cube.translate([0, 0, -(ring_height+trimming_cube_h)/2])
   )
-  return r_shell
+  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height*0.5, 2, 3, ring_radius)
+  return union(r_shell, text_geom.translate([0, 0, ring_height * 0.25]))
 
 get_rings = (params)->
   ring_height = 10
@@ -129,7 +130,7 @@ global.getParameterDefinitions = ->
     {
       name: 'heart_radius',
       type: 'float',
-      initial: 6,
+      initial: 10,
       step: 0.25,
       caption: 'Heart Radius'
     }
