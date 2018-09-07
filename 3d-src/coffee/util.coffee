@@ -34,3 +34,13 @@ exports.get_object_dimensions = (geom_obj)->
     return dimensions
   else
     throw 'Does not have bounds!'
+
+exports.scale_to = (geom_obj, desired_x, desired_y, desired_z)->
+  geom_dims = exports.get_object_dimensions geom_obj
+  xy_only = !desired_z?
+  x_factor = desired_x/geom_dims.x
+  y_factor = desired_y/geom_dims.y
+  if !xy_only
+    z_factor = desired_z/geom_dims.z
+    return geom_obj.scale([x_factor, y_factor, z_factor])
+  return geom_obj.scale([x_factor, y_factor])
