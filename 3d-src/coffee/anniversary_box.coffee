@@ -144,7 +144,7 @@ global.getParameterDefinitions = ->
     {
       name: 'anna_finger_perimeter',
       type: 'float',
-      initial: 55,
+      initial: 56.5,
       step: 0.5,
       caption: "Anna's finger perimeter"
     }
