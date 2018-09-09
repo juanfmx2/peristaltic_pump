@@ -142,7 +142,12 @@ class ScrewType
 
 ScrewType.load_m_iso_data()
 
-exports.available_screw_types = ScrewType.known_screws_data
+exports.available_screw_types = _.keys(ScrewType.known_screws_data)
+
+exports.get_screw_by_type = (screw_type)->
+  if _.has(ScrewType.known_screws_data, screw_type)
+    return ScrewType.known_screws_data[screw_type]
+  return null
 
 global.getParameterDefinitions = ->
   return [
