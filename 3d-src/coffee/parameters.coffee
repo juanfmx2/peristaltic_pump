@@ -23,10 +23,8 @@ exports.get_motor_parameters = ->
 exports.get_bearings_parameters = ->
   return [
     {name: 'bearings', caption: 'Bearings', type: 'group'}
-    {name: 'bearings_height', type: 'float', initial: 5, step: 1, caption: 'height'}
-    {name: 'bearings_washers_height', type: 'float', initial: 0.5, step: 0.1, caption: 'washers height'}
-    {name: 'bearings_washers_radius', type: 'float', initial: 4.5, step: 0.1, caption: 'washers radius'}
-    {name: 'bearing_outer_radius', type: 'float', initial: 5, step: 0.25, caption: 'outer radius'}
+    {name: 'bearings_height', type: 'float', initial: 10, step: 1, caption: 'height'}
+    {name: 'bearing_outer_radius', type: 'float', initial: 6.5, step: 0.25, caption: 'outer radius'}
     {
       name: 'bearing_screw_type'
       type: 'choice'
@@ -35,6 +33,8 @@ exports.get_bearings_parameters = ->
       caption: 'screw type'
     }
     {name: 'bearing_nut_height', type: 'float', initial: 1.5, step: 0.1, caption: 'nut height'}
+    {name: 'bearings_washers_height', type: 'float', initial: 0.9, step: 0.05, caption: 'washers height'}
+    {name: 'bearings_washers_radius', type: 'float', initial: 4.5, step: 0.1, caption: 'washers radius'}
   ]
 
 exports.get_arms_parameters = ->
@@ -42,9 +42,9 @@ exports.get_arms_parameters = ->
     {name: 'arms', caption: 'Bearings Holder', type: 'group'}
     {name: 'arms_num', type: 'float', initial: 5, step: 1, caption: 'Number of Arms'}
     {name: 'arm_height', type: 'float', initial: 3, step: 0.25, caption: 'Arm height'}
-    {name: 'arm_radius', type: 'float', initial: 19, step: 0.5, caption: 'Arm radius'}
-    {name: 'arms_shaft_radius', type: 'float', initial: 4, step: 0.25, caption: 'Arms Shaft radius'}
-    {name: 'arms_shaft_top_height', type: 'float', initial: 8, step: 1, caption: 'Arms Shaft top height'}
+    {name: 'arm_radius', type: 'float', initial: 20, step: 0.5, caption: 'Arm radius'}
+    {name: 'arms_shaft_radius', type: 'float', initial: 6, step: 0.25, caption: 'Shaft radius'}
+    {name: 'arms_shaft_top_height', type: 'float', initial: 8, step: 1, caption: 'Shaft top height'}
   ]
 
 exports.get_enclosure_parameters = ->
