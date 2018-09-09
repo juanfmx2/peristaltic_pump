@@ -34,14 +34,14 @@ exports.create_extruded_text_around_cylinder = (text, text_height, line_width, t
       extruded_char = extruded_char.scale([scale_factor, scale_factor, 1])
       text_dimensions = exports.get_object_dimensions extruded_char
       # move half angle of current char before drawing
-      cur_angle +=  Math.atan(text_dimensions.x*1.01/(2*cyl_radius)) * 180 / Math.PI
+      cur_angle +=  Math.atan(text_dimensions.x*1.1/(2*cyl_radius)) * 180 / Math.PI
       extruded_char = extruded_char.center('x', 'y', 'z')
         .translate([0, -text_dimensions.y/2, text_dimensions.z/2]).rotateX(90)
         .translate([0, -cyl_radius, 0]).rotateZ(cur_angle)
       extruded_positioned_text.push(extruded_char)
     # move half angle of current char after drawing
     x_delta = if text_dimensions? then text_dimensions.x else text_height
-    cur_angle +=  Math.atan(x_delta*1.01/(2*cyl_radius)) * 180 / Math.PI
+    cur_angle +=  Math.atan(x_delta*1.1/(2*cyl_radius)) * 180 / Math.PI
   return union(extruded_positioned_text)
 
 
