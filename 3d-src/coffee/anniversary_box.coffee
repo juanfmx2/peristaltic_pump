@@ -106,15 +106,15 @@ get_ring = (ring_perimeter, ring_height, ring_text)->
     trimming_cube.translate([0, 0, (ring_height+trimming_cube_h)/2]),
     trimming_cube.translate([0, 0, -(ring_height+trimming_cube_h)/2])
   )
-  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height*0.5, 2, 3, ring_radius)
-  return union(r_shell, text_geom.translate([0, 0, ring_height * 0.25]))
+  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height*0.5, 3.25, 2.75, ring_radius+0.8)
+  return difference(r_shell, text_geom.translate([0, 0, ring_height * 0.25]))
 
 get_rings = (params)->
   ring_height = 10
   j_ring = get_ring(params.juan_finger_perimeter, ring_height, 'JM&AK')
   a_ring = get_ring(params.anna_finger_perimeter, ring_height, 'AK&JM')
   return union(
-    j_ring.translate([-25, 0, ring_height/2]).setColor(css2rgb('green')),
+    j_ring.rotateZ(180).translate([-25, 0, ring_height/2]).setColor(css2rgb('green')),
     a_ring.translate([0, -25, ring_height/2]).setColor(css2rgb('green'))
   )
 
