@@ -3,24 +3,26 @@
 # license    : GNU GENERAL PUBLIC LICENSE v3
 # tags       : peristaltic, pump
 # file       : peristaltic_pump.coffee
-get_motor_parameters = require('./parameters.coffee').get_motor_parameters
+parameters = require('./parameters.coffee')
+screws = require './screws.coffee'
+util = require './util.coffee'
 
 create_base_and_screws = (params)->
-  baseScrew = cylinder(
+  base_screw = cylinder(
     {
       r: params.motor_mountingholes_radius
-      h: params.motor_mountingholes_screw_h
+      h: params.motor_mountingholes_depth
       center: [true, true, false]
     }
   )
 
   mhOffset = params.motor_mountingholes_offset
 
-  screws = union(
-    translate([ mhOffset,  mhOffset, 0], baseScrew)
-    translate([ mhOffset, -mhOffset, 0], baseScrew)
-    translate([-mhOffset,  mhOffset, 0], baseScrew)
-    translate([-mhOffset, -mhOffset, 0], baseScrew)
+  base_screws_holes = union(
+    translate([ mhOffset,  mhOffset, 0], base_screw)
+    translate([ mhOffset, -mhOffset, 0], base_screw)
+    translate([-mhOffset,  mhOffset, 0], base_screw)
+    translate([-mhOffset, -mhOffset, 0], base_screw)
   )
 
   baseW = 2 * (mhOffset + 2*params.motor_mountingholes_radius)
@@ -45,38 +47,38 @@ create_base_and_screws = (params)->
     h: params.motor_shaft_height + params.motor_mountingholes_depth
     center:[true, true, false]
   })
-  base = difference(base, screws)
+  base = difference(base, base_screws_holes)
   base = color('darkgrey', base)
   shaft = color('grey', shaft)
-  screws = color('Red', screws)
-  return union(base, shaft, screws)
-
-
-create_extruded_regular_polygon = (r, h, s)->
-  return linear_extrude({height: h}, circle({r: r, fn: s, center: true}))
+  return union(base, shaft)
 
 
 createPumpArms = (params)->
-  armTipRadius = (params.bearing_outer_radius + params.bearing_inner_radius)/2
+  cur_screw = screws.get_screw_by_type params.bearing_screw_type
+  console.warn(cur_screw)
+  console.warn(cur_screw.radius)
+  console.warn(cur_screw.nut_radius)
+  
+  armTipRadius = (params.bearing_outer_radius + cur_screw.radius)*3/4
   radiusToBearings = params.arm_radius - params.bearing_outer_radius
   armsDelta = params.bearings_height + 2 * params.bearings_washers_height
 
   armTip = translate([radiusToBearings, 0, 0], circle({r: armTipRadius, center: true}))
   armsShaft = circle({r: params.arms_shaft_radius + 1, center: true})
   middlePath = translate(
-    [radiusToBearings/2, params.bearing_inner_radius, 0],
+    [radiusToBearings/2, cur_screw.radius, 0],
     circle({r: (params.arms_shaft_radius + armTipRadius) * 1 / 2, center: true})
   )
-  middlePathAngle = Math.atan(params.bearing_inner_radius/(radiusToBearings/2)) * 180 / Math.PI
+  middlePathAngle = Math.atan(cur_screw.radius/(radiusToBearings/2)) * 180 / Math.PI
 
   baseArm = linear_extrude({height: params.arm_height},
     difference(
       chain_hull([armsShaft, middlePath, armTip]),
-      translate([radiusToBearings, 0, 0], circle({r: params.bearing_inner_radius, center: true}))
+      translate([radiusToBearings, 0, 0], circle({r: cur_screw.radius, center: true}))
     )
   )
 
-  hexNut = create_extruded_regular_polygon(params.bearing_nut_radius, params.bearing_nut_height, 6)
+  hexNut = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height, 6)
   washer = color(
     'white',
     cylinder({r: params.bearings_washers_radius, h: params.bearings_washers_height, center:[true, true, false]})
@@ -111,7 +113,7 @@ createPumpArms = (params)->
       translate([0, 0, params.bearings_washers_height + params.bearings_height], washer)
     ),
     cylinder
-      r: params.bearing_inner_radius
+      r: cur_screw.radius
       h: armsDelta
       center:[true, true, false]
   )
@@ -158,11 +160,16 @@ createPumpArms = (params)->
     )
     return rotate([0, 0, angle/2], geomObj)
 
-  hexNutHole = create_extruded_regular_polygon(params.bearing_nut_radius, params.bearing_nut_height * 2, 6)
-  hexNutHole = union(hexNutHole, cylinder({r: params.bearing_inner_radius, h: 3, center: true}))
+  hexNutHole = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height * 2, 6)
+  hexNutHole = union(
+    hexNutHole,
+    cube({center:[true,true,false]}).scale([5.5,5.5,params.bearing_nut_height * 2]).translate([-2.5,0,0])
+
+  )
+  hexNutHole = union(hexNutHole, cylinder({r: cur_screw.radius, h: 10, center: true}))
   hexNutHole = positionHolderNutGeom(hexNutHole)
 
-  hexNutHoleWrapper = create_extruded_regular_polygon(params.bearing_nut_radius+1, params.bearing_nut_height * 2, 6)
+  hexNutHoleWrapper = util.create_extruded_regular_polygon(cur_screw.nut_radius+1, params.bearing_nut_height * 2 + 1, 6)
   hexNutHoleWrapper = positionHolderNutGeom(hexNutHoleWrapper)
 
   shaftTower = union(shaftTower, hexNutHoleWrapper)
@@ -170,6 +177,15 @@ createPumpArms = (params)->
 
   armsHolder = union(shaftTower, joinedArmsBottom, joinedArmsTop)
   armsHolder = color('green', armsHolder)
+  armsHolder = difference(armsHolder, cylinder(
+    {
+      r: params.motor_shaft_radius + 0.1
+      h: 50
+      center: [true, true, false]
+    }
+  ))
+  a_b_intersection = intersection(armsHolder, joinedBearings)
+  console.warn a_b_intersection.getBounds()
   return union(armsHolder, joinedBearings)
 
 
@@ -181,12 +197,10 @@ get_rendering_forms = (params)->
     cylinder({r: params.arm_radius + 7, h: 20, center:[true, true ,false]}),
     cylinder({r: params.arm_radius + 2, h: 20, center:[true, true ,false]})
   )
-  return [arms,baseAndScrews, enclosure]
+  return [baseAndScrews, arms, enclosure]
 
 global.getParameterDefinitions = ->
-  params_definition = []
-  params_definition = params_definition.concat(get_motor_parameters())
-  return params_definition
+  return parameters.get_all_parameters()
 
 global.main = (params)->
   return get_rendering_forms(params)
