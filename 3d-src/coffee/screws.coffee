@@ -154,6 +154,10 @@ exports.get_screw_by_type = (screw_type)->
     return ScrewType.known_screws_data[screw_type]
   return null
 
+# ----------------------------------------------------------------------------------------------------------------------
+# OpenJSCAD functions for default rendering
+# ----------------------------------------------------------------------------------------------------------------------
+
 global.getParameterDefinitions = ->
   return [
     {
