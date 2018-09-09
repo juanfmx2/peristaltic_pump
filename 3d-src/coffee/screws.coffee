@@ -22,6 +22,8 @@ class ScrewType
   constructor: (@name, @diameter, @spanner_size, @head_diameter, @head_height, coarse_pitch, fine_pitch)->
     sqrt_3 = Math.pow(3.0, 0.5)
     @nut_diameter = 2.0 * @spanner_size / sqrt_3
+    @nut_radius = @nut_diameter/2
+    @radius = @diameter/2
     @thread_data = {
       coarse:
         pitch: coarse_pitch
