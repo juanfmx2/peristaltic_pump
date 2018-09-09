@@ -16,27 +16,27 @@ create_base_and_screws = (params)->
     }
   )
 
-  mhOffset = params.motor_mountingholes_offset
+  mh_offset = params.motor_mountingholes_offset
 
   base_screws_holes = union(
-    translate([ mhOffset,  mhOffset, 0], base_screw)
-    translate([ mhOffset, -mhOffset, 0], base_screw)
-    translate([-mhOffset,  mhOffset, 0], base_screw)
-    translate([-mhOffset, -mhOffset, 0], base_screw)
+    translate([ mh_offset,  mh_offset, 0], base_screw)
+    translate([ mh_offset, -mh_offset, 0], base_screw)
+    translate([-mh_offset,  mh_offset, 0], base_screw)
+    translate([-mh_offset, -mh_offset, 0], base_screw)
   )
 
-  baseW = 2 * (mhOffset + 2*params.motor_mountingholes_radius)
+  base_w = 2 * (mh_offset + 2*params.motor_mountingholes_radius)
 
-  base = cube({size: [baseW, baseW, params.motor_mountingholes_depth], center: [true, true, false]})
-  base = union(
-    base, cylinder({
+  motor_base = cube({size: [base_w, base_w, params.motor_mountingholes_depth], center: [true, true, false]})
+  motor_base = union(
+    motor_base, cylinder({
       r: params.motor_ring_radius
       h: params.motor_ring_height + params.motor_mountingholes_depth
       center:[true, true, false]
     })
   )
-  base = difference(
-    base, cylinder({
+  motor_base = difference(
+    motor_base, cylinder({
       r: params.motor_shaft_radius + 0.25
       h: params.motor_shaft_height + params.motor_mountingholes_depth
       center:[true, true, false]
@@ -47,55 +47,55 @@ create_base_and_screws = (params)->
     h: params.motor_shaft_height + params.motor_mountingholes_depth
     center:[true, true, false]
   })
-  base = difference(base, base_screws_holes)
-  base = color('darkgrey', base)
+  motor_base = difference(motor_base, base_screws_holes)
+  motor_base = color('darkgrey', motor_base)
   shaft = color('grey', shaft)
-  return union(base, shaft)
+  return union(motor_base, shaft)
 
 
-createPumpArms = (params)->
+create_pump_arms = (params)->
   cur_screw = screws.get_screw_by_type params.bearing_screw_type
   
-  armTipRadius = (params.bearing_outer_radius + cur_screw.radius)/2
-  radiusToBearings = params.arm_radius - params.bearing_outer_radius
-  armsDelta = params.bearings_height + 2 * params.bearings_washers_height
+  arm_tip_radius = (params.bearing_outer_radius + cur_screw.radius)/2
+  radius_to_bearings = params.arm_radius - params.bearing_outer_radius
+  arms_delta = params.bearings_height + 2 * params.bearings_washers_height
 
-  armTip = translate([radiusToBearings, 0, 0], circle({r: armTipRadius, center: true}))
-  armsShaft = circle({r: params.arms_shaft_radius + 1, center: true})
-  middlePath = translate(
-    [radiusToBearings/2, cur_screw.radius, 0],
-    circle({r: (params.arms_shaft_radius + armTipRadius) * 1 / 2, center: true})
+  arm_tip = translate([radius_to_bearings, 0, 0], circle({r: arm_tip_radius, center: true}))
+  arms_shaft = circle({r: params.arms_shaft_radius + 1, center: true})
+  middle_path = translate(
+    [radius_to_bearings/2, cur_screw.radius, 0],
+    circle({r: (params.arms_shaft_radius + arm_tip_radius) * 1 / 2, center: true})
   )
-  middlePathAngle = Math.atan(cur_screw.radius/(radiusToBearings/2)) * 180 / Math.PI
+  middle_path_angle = Math.atan(cur_screw.radius/(radius_to_bearings/2)) * 180 / Math.PI
 
-  baseArm = linear_extrude({height: params.arm_height},
+  base_arm = linear_extrude({height: params.arm_height},
     difference(
-      chain_hull([armsShaft, middlePath, armTip]),
-      translate([radiusToBearings, 0, 0], circle({r: cur_screw.radius, center: true}))
+      chain_hull([arms_shaft, middle_path, arm_tip]),
+      translate([radius_to_bearings, 0, 0], circle({r: cur_screw.radius, center: true}))
     )
   )
 
-  hexNut = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height, 6)
+  hex_nut = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height, 6)
   washer = color(
     'white',
     cylinder({r: params.bearings_washers_radius, h: params.bearings_washers_height, center:[true, true, false]})
   )
 
-  baseBottomArm = difference(
-    baseArm, translate([radiusToBearings, 0, 0],
-      rotate([0, 0, -middlePathAngle], hexNut)
+  base_bottom_arm = difference(
+    base_arm, translate([radius_to_bearings, 0, 0],
+      rotate([0, 0, -middle_path_angle], hex_nut)
     )
   )
 
-  baseTopArm = difference(
-    baseArm,
-    translate([radiusToBearings, 0, params.arm_height - params.bearing_nut_height],
-      rotate([0, 0, -middlePathAngle], hexNut)
+  base_top_arm = difference(
+    base_arm,
+    translate([radius_to_bearings, 0, params.arm_height - params.bearing_nut_height],
+      rotate([0, 0, -middle_path_angle], hex_nut)
     )
   )
-  baseTopArm = translate([0, 0, armsDelta + params.arm_height], baseTopArm)
+  base_top_arm = translate([0, 0, arms_delta + params.arm_height], base_top_arm)
 
-  bearingBase = difference(
+  bearing_base = difference(
     union(
       washer,
       translate(
@@ -111,93 +111,93 @@ createPumpArms = (params)->
     ),
     cylinder
       r: cur_screw.radius
-      h: armsDelta
+      h: arms_delta
       center:[true, true, false]
   )
-  bearingBase = translate([radiusToBearings, 0, params.arm_height], bearingBase)
+  bearing_base = translate([radius_to_bearings, 0, params.arm_height], bearing_base)
 
   angle = 360/params.arms_num
-  joinedArmsBottom = baseBottomArm
-  joinedArmsTop = baseTopArm
-  joinedBearings = bearingBase
+  joined_arms_bottom = base_bottom_arm
+  joined_arms_top = base_top_arm
+  joined_bearings = bearing_base
   for i in [0..params.arms_num]
-    joinedArmsBottom = union(joinedArmsBottom, rotate([0, 0, angle*i], baseBottomArm))
-    joinedArmsTop = union(joinedArmsTop, rotate([0, 0, angle*i], baseTopArm))
-    joinedBearings = union(joinedBearings, rotate([0, 0, angle*i], bearingBase))
+    joined_arms_bottom = union(joined_arms_bottom, rotate([0, 0, angle*i], base_bottom_arm))
+    joined_arms_top = union(joined_arms_top, rotate([0, 0, angle*i], base_top_arm))
+    joined_bearings = union(joined_bearings, rotate([0, 0, angle*i], bearing_base))
 
-  shaftSectionR = params.arms_shaft_radius
-  shaftClosingSectionR = params.motor_shaft_radius + 0.5
-  shaftWideSectionR = params.arms_shaft_radius + 1
+  shaft_section_r = params.arms_shaft_radius
+  shaft_closing_section_r = params.motor_shaft_radius + 0.75
+  shaft_wide_section_r = params.arms_shaft_radius + 1
 
-  shaftTowerPath =  new CSG.Path2D([[params.motor_shaft_radius + 0.1, 0], [shaftWideSectionR, 0]], false)
-  curY = params.arm_height
-  shaftTowerPath = shaftTowerPath.appendPoint([shaftWideSectionR, curY])
-  shaftTowerPath = shaftTowerPath.appendBezier([[shaftWideSectionR, curY], [shaftSectionR, curY], [shaftSectionR, curY + 1]])
-  curY += armsDelta
-  shaftTowerPath = shaftTowerPath.appendPoint([shaftSectionR, curY - 1])
-  shaftTowerPath = shaftTowerPath.appendBezier([[shaftSectionR, curY], [shaftWideSectionR, curY], [shaftWideSectionR, curY]])
-  curY += params.arm_height
-  shaftTowerPath = shaftTowerPath.appendPoint([shaftWideSectionR, curY])
-  shaftTowerPath = shaftTowerPath.appendBezier([[shaftWideSectionR, curY], [shaftSectionR, curY], [shaftSectionR, curY + 1]])
-  curY += params.arms_shaft_top_height
-  shaftTowerPath = shaftTowerPath.appendPoint([shaftSectionR, curY - 1])
-  shaftTowerPath = shaftTowerPath.appendBezier([[shaftSectionR, curY], [shaftClosingSectionR, curY], [shaftClosingSectionR, curY]])
-  shaftTowerPath = shaftTowerPath.appendPoint([params.motor_shaft_radius + 0.1, curY])
-  shaftTowerPath = shaftTowerPath.close()
+  shaft_tower_path =  new CSG.Path2D([[params.motor_shaft_radius + 0.1, 0], [shaft_wide_section_r, 0]], false)
+  cur_y = params.arm_height
+  shaft_tower_path = shaft_tower_path.appendPoint([shaft_wide_section_r, cur_y])
+  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_wide_section_r, cur_y], [shaft_section_r, cur_y], [shaft_section_r, cur_y + 1]])
+  cur_y += arms_delta
+  shaft_tower_path = shaft_tower_path.appendPoint([shaft_section_r, cur_y - 1])
+  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_section_r, cur_y], [shaft_wide_section_r, cur_y], [shaft_wide_section_r, cur_y]])
+  cur_y += params.arm_height
+  shaft_tower_path = shaft_tower_path.appendPoint([shaft_wide_section_r, cur_y])
+  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_wide_section_r, cur_y], [shaft_section_r, cur_y], [shaft_section_r, cur_y + 1]])
+  cur_y += params.arms_shaft_top_height
+  shaft_tower_path = shaft_tower_path.appendPoint([shaft_section_r, cur_y - 1])
+  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_section_r, cur_y], [shaft_closing_section_r, cur_y], [shaft_closing_section_r, cur_y]])
+  shaft_tower_path = shaft_tower_path.appendPoint([params.motor_shaft_radius + 0.1, cur_y])
+  shaft_tower_path = shaft_tower_path.close()
 
-  shaftTowerSiloutte = polygon(shaftTowerPath)
+  shaft_tower_silhouette = polygon(shaft_tower_path)
 
-  shaftTower = rotate_extrude(shaftTowerSiloutte)
+  shaft_tower = rotate_extrude(shaft_tower_silhouette)
 
-  positionHolderNutGeom = (geomObj)->
-    geomObj = rotate([0, 90, 0], geomObj)
-    geomObj = translate(
-      [params.motor_shaft_radius + 1, 0, 2 * params.arm_height + armsDelta + params.arms_shaft_top_height/2],
-      geomObj
+  position_holder_nut_geom = (geom_obj)->
+    geom_obj = rotate([0, 90, 0], geom_obj)
+    geom_obj = translate(
+      [params.motor_shaft_radius + 1, 0, 2 * params.arm_height + arms_delta + params.arms_shaft_top_height/2],
+      geom_obj
     )
-    return rotate([0, 0, angle/2], geomObj)
+    return rotate([0, 0, angle/2], geom_obj)
 
-  hexNutHole = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height * 2, 6)
-  hexNutHole = union(
-    hexNutHole,
+  hex_nut_hole = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height * 2, 6)
+  hex_nut_hole = union(
+    hex_nut_hole,
     cube({center:[true,true,false]}).scale([5.5,5.5,params.bearing_nut_height * 2]).translate([-2.5,0,0])
 
   )
-  hexNutHole = union(hexNutHole, cylinder({r: cur_screw.radius, h: 10, center: true}))
-  hexNutHole = positionHolderNutGeom(hexNutHole)
+  hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
+  hex_nut_hole = position_holder_nut_geom(hex_nut_hole)
 
-  hexNutHoleWrapper = util.create_extruded_regular_polygon(cur_screw.nut_radius+1, params.bearing_nut_height * 2 + 1, 6)
-  hexNutHoleWrapper = positionHolderNutGeom(hexNutHoleWrapper)
+  hex_nut_hole_wrapper = util.create_extruded_regular_polygon(cur_screw.nut_radius+1, params.bearing_nut_height * 2 + 1, 6)
+  hex_nut_hole_wrapper = position_holder_nut_geom(hex_nut_hole_wrapper)
 
-  shaftTower = union(shaftTower, hexNutHoleWrapper)
-  shaftTower = difference(shaftTower, hexNutHole)
+  shaft_tower = union(shaft_tower, hex_nut_hole_wrapper)
+  shaft_tower = difference(shaft_tower, hex_nut_hole)
 
-  armsHolder = union(shaftTower, joinedArmsBottom, joinedArmsTop)
-  armsHolder = color('green', armsHolder)
-  armsHolder = difference(armsHolder, cylinder(
+  arms_holder = union(shaft_tower, joined_arms_bottom, joined_arms_top)
+  arms_holder = color('green', arms_holder)
+  arms_holder = difference(arms_holder, cylinder(
     {
       r: params.motor_shaft_radius + 0.1
       h: 50
       center: [true, true, false]
     }
   ))
-  a_b_intersection = intersection(armsHolder, joinedBearings)
+  a_b_intersection = intersection(arms_holder, joined_bearings)
   intersections_dims = util.get_object_dimensions a_b_intersection
   if intersections_dims.x != 0 || intersections_dims.y != 0 || intersections_dims.z != 0
     alert 'Bearings and Arms are intersecting!'
     console.error 'Bearings and Arms are intersecting!'
-  return union(armsHolder, joinedBearings)
+  return union(arms_holder, joined_bearings)
 
 
 get_rendering_forms = (params)->
-  baseAndScrews = create_base_and_screws(params)
-  arms = createPumpArms(params)
+  base_and_screws = create_base_and_screws(params)
+  arms = create_pump_arms(params)
   arms = translate([0, 0, params.motor_mountingholes_depth + params.motor_ring_height + 1], arms)
   enclosure = difference(
     cylinder({r: params.arm_radius + 7, h: 20, center:[true, true ,false]}),
     cylinder({r: params.arm_radius + 2, h: 20, center:[true, true ,false]})
   )
-  return [baseAndScrews, arms, enclosure]
+  return [base_and_screws, arms, enclosure]
 
 # ----------------------------------------------------------------------------------------------------------------------
 # OpenJSCAD functions
