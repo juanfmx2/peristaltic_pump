@@ -87,8 +87,8 @@ get_ring = function(ring_perimeter, ring_height, ring_text) {
     center: true
   });
   r_shell = difference(outer_s, inner_s, trimming_cube.translate([0, 0, (ring_height + trimming_cube_h) / 2]), trimming_cube.translate([0, 0, -(ring_height + trimming_cube_h) / 2]));
-  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height * 0.5, 2, 3, ring_radius);
-  return union(r_shell, text_geom.translate([0, 0, ring_height * 0.25]));
+  text_geom = util.create_extruded_text_around_cylinder(ring_text, ring_height * 0.5, 3.25, 2.75, ring_radius + 0.8);
+  return difference(r_shell, text_geom.translate([0, 0, ring_height * 0.25]));
 };
 
 get_rings = function(params) {
@@ -96,7 +96,7 @@ get_rings = function(params) {
   ring_height = 10;
   j_ring = get_ring(params.juan_finger_perimeter, ring_height, 'JM&AK');
   a_ring = get_ring(params.anna_finger_perimeter, ring_height, 'AK&JM');
-  return union(j_ring.translate([-25, 0, ring_height / 2]).setColor(css2rgb('green')), a_ring.translate([0, -25, ring_height / 2]).setColor(css2rgb('green')));
+  return union(j_ring.rotateZ(180).translate([-25, 0, ring_height / 2]).setColor(css2rgb('green')), a_ring.translate([0, -25, ring_height / 2]).setColor(css2rgb('green')));
 };
 
 global.getParameterDefinitions = function() {
@@ -129,7 +129,7 @@ global.getParameterDefinitions = function() {
     {
       name: 'anna_finger_perimeter',
       type: 'float',
-      initial: 55,
+      initial: 56.5,
       step: 0.5,
       caption: "Anna's finger perimeter"
     },
@@ -657,13 +657,13 @@ exports.create_extruded_text_around_cylinder = function(text, text_height, line_
       extruded_char = extruded_char.scale([scale_factor, scale_factor, 1]);
       text_dimensions = exports.get_object_dimensions(extruded_char);
       // move half angle of current char before drawing
-      cur_angle += Math.atan(text_dimensions.x * 1.01 / (2 * cyl_radius)) * 180 / Math.PI;
+      cur_angle += Math.atan(text_dimensions.x * 1.1 / (2 * cyl_radius)) * 180 / Math.PI;
       extruded_char = extruded_char.center('x', 'y', 'z').translate([0, -text_dimensions.y / 2, text_dimensions.z / 2]).rotateX(90).translate([0, -cyl_radius, 0]).rotateZ(cur_angle);
       extruded_positioned_text.push(extruded_char);
     }
     // move half angle of current char after drawing
     x_delta = text_dimensions != null ? text_dimensions.x : text_height;
-    cur_angle += Math.atan(x_delta * 1.01 / (2 * cyl_radius)) * 180 / Math.PI;
+    cur_angle += Math.atan(x_delta * 1.1 / (2 * cyl_radius)) * 180 / Math.PI;
   }
   return union(extruded_positioned_text);
 };
