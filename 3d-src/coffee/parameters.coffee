@@ -59,9 +59,16 @@ exports.get_enclosure_parameters = ->
     }
   ]
 
+exports.get_general_parameters = ->
+  return [
+    {name: 'general', caption: 'General', type: 'group'}
+    {name: 'clearance', type: 'float', initial: 0.4, step: 0.025, caption: 'Objects Clearance'}
+  ]
+
 exports.get_all_parameters = ->
   return []
-    .concat(exports.get_motor_parameters())
-    .concat(exports.get_bearings_parameters())
-    .concat(exports.get_arms_parameters())
-    .concat(exports.get_enclosure_parameters())
+    .concat exports.get_motor_parameters()
+    .concat exports.get_bearings_parameters()
+    .concat exports.get_arms_parameters()
+    .concat exports.get_enclosure_parameters()
+    .concat exports.get_general_parameters()
