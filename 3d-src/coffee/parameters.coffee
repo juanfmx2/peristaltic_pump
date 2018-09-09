@@ -32,7 +32,7 @@ exports.get_bearings_parameters = ->
       type: 'choice'
       values: screws.available_screw_types
       initial: 'M3'
-      caption: 'Screw type'
+      caption: 'screw type'
     }
     {name: 'bearing_nut_height', type: 'float', initial: 1.5, step: 0.1, caption: 'nut height'}
   ]
@@ -55,7 +55,7 @@ exports.get_enclosure_parameters = ->
       type: 'choice'
       values: screws.available_screw_types
       initial: 'M3'
-      caption: 'Screw type'
+      caption: 'screw type'
     }
   ]
 
