@@ -124,6 +124,9 @@ class ScrewType
     screw = screw.center().rotateX(180).translate([0, 0, (params.screw_length+@head_height)/2])
     return screw
 
+  draw_nut_hole: (height, clearance=0)->
+    return util.create_extruded_regular_polygon(@nut_radius + 2*clearance, height + 2*clearance, 6)
+
   draw_nut: (params)->
     if !_.isObject params
       params = {}
@@ -134,7 +137,7 @@ class ScrewType
       height: @head_height
     })
 
-    nut = util.create_extruded_regular_polygon(@nut_diameter/2, @head_height, 6)
+    nut = util.create_extruded_regular_polygon(@nut_radius, @head_height, 6)
     if params.placeholder
       return nut
     else
