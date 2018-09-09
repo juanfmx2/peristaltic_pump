@@ -62,7 +62,7 @@ exports.get_enclosure_parameters = ->
 exports.get_general_parameters = ->
   return [
     {name: 'general', caption: 'General', type: 'group'}
-    {name: 'clearance', type: 'float', initial: 0.4, step: 0.025, caption: 'Objects Clearance'}
+    {name: 'clearance', type: 'float', initial: 0.3, step: 0.025, caption: 'Objects Clearance'}
   ]
 
 exports.get_all_parameters = ->
