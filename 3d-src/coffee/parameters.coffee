@@ -32,7 +32,7 @@ exports.get_bearings_parameters = ->
       initial: 'M3'
       caption: 'screw type'
     }
-    {name: 'bearing_nut_height', type: 'float', initial: 1.5, step: 0.1, caption: 'nut height'}
+    {name: 'bearing_nut_height', type: 'float', initial: 1.8, step: 0.05, caption: 'nut height'}
     {name: 'bearings_washers_height', type: 'float', initial: 0.9, step: 0.05, caption: 'washers height'}
     {name: 'bearings_washers_radius', type: 'float', initial: 4.5, step: 0.1, caption: 'washers radius'}
   ]
