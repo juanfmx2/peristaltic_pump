@@ -55,11 +55,8 @@ create_base_and_screws = (params)->
 
 createPumpArms = (params)->
   cur_screw = screws.get_screw_by_type params.bearing_screw_type
-  console.warn(cur_screw)
-  console.warn(cur_screw.radius)
-  console.warn(cur_screw.nut_radius)
   
-  armTipRadius = (params.bearing_outer_radius + cur_screw.radius)*3/4
+  armTipRadius = (params.bearing_outer_radius + cur_screw.radius)/2
   radiusToBearings = params.arm_radius - params.bearing_outer_radius
   armsDelta = params.bearings_height + 2 * params.bearings_washers_height
 
@@ -185,7 +182,10 @@ createPumpArms = (params)->
     }
   ))
   a_b_intersection = intersection(armsHolder, joinedBearings)
-  console.warn a_b_intersection.getBounds()
+  intersections_dims = util.get_object_dimensions a_b_intersection
+  if intersections_dims.x != 0 || intersections_dims.y != 0 || intersections_dims.z != 0
+    alert 'Bearings and Arms are intersecting!'
+    console.error 'Bearings and Arms are intersecting!'
   return union(armsHolder, joinedBearings)
 
 
@@ -198,6 +198,10 @@ get_rendering_forms = (params)->
     cylinder({r: params.arm_radius + 2, h: 20, center:[true, true ,false]})
   )
   return [baseAndScrews, arms, enclosure]
+
+# ----------------------------------------------------------------------------------------------------------------------
+# OpenJSCAD functions
+# ----------------------------------------------------------------------------------------------------------------------
 
 global.getParameterDefinitions = ->
   return parameters.get_all_parameters()
