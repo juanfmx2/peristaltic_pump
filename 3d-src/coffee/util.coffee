@@ -52,11 +52,11 @@ exports.get_object_dimensions = (geom_obj)->
       throw 'Why more than 2 points?'
     dimensions = {}
     if bounds[0].x?
-      dimensions.x = bounds[1].x-bounds[0].x
+      dimensions.x = Math.abs(bounds[1].x-bounds[0].x)
     if bounds[0].y?
-      dimensions.y = bounds[1].y-bounds[0].y
+      dimensions.y = Math.abs(bounds[1].y-bounds[0].y)
     if bounds[0].z?
-      dimensions.z = bounds[1].z-bounds[0].z
+      dimensions.z = Math.abs(bounds[1].z-bounds[0].z)
     return dimensions
   else
     throw 'Does not have bounds!'
