@@ -88,6 +88,7 @@ create_arms_shaft_tower = (params)->
   shaft_tower_path = shaft_tower_path.close()
 
   shaft_tower_silhouette = polygon(shaft_tower_path)
+
   shaft_tower = rotate_extrude(shaft_tower_silhouette)
   position_holder_nut_geom = (geom_obj)->
     geom_obj = rotate([0, 90, 0], geom_obj)
@@ -100,9 +101,8 @@ create_arms_shaft_tower = (params)->
   hex_nut_hole_dims = util.get_object_dimensions hex_nut_hole
   hex_nut_hole = union(
     hex_nut_hole,
-    cube({center:[true,true,false]}).scale(
-      [hex_nut_hole_dims.x, hex_nut_hole_dims.x, hex_nut_hole_dims]).translate([-2.5,0,0]
-    )
+    cube({center:[true,true,false]}).scale([hex_nut_hole_dims.x, hex_nut_hole_dims.x, hex_nut_hole_dims.z])
+      .translate([-2.5,0,0])
   )
   hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
   hex_nut_hole = position_holder_nut_geom(hex_nut_hole)
@@ -178,7 +178,7 @@ create_pump_arms = (params)->
       h: arms_delta
       center:[true, true, false]
   )
-  bearing_base = translate([radius_to_bearings, 0, params.arm_height + params.clearance], bearing_base)
+  bearing_base = translate([radius_to_bearings, 0, params.arm_height+params.clearance], bearing_base)
 
   angle = 360/params.arms_num
   joined_arms_bottom = base_bottom_arm
