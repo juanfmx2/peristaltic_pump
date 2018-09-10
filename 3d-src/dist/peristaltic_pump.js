@@ -288,9 +288,10 @@ create_arms_shaft_tower = function(params) {
   };
   hex_nut_hole = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance);
   hex_nut_hole_dims = util.get_object_dimensions(hex_nut_hole);
+  // Use the dimensions of the hexagon in y as it will be the spanner width
   hex_nut_hole = union(hex_nut_hole, cube({
     center: [true, true, false]
-  }).scale([hex_nut_hole_dims.x, hex_nut_hole_dims.x, hex_nut_hole_dims]).translate([-2.5, 0, 0]));
+  }).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z]).translate([-2.5, 0, 0]));
   hex_nut_hole = union(hex_nut_hole, cylinder({
     r: cur_screw.radius,
     h: 10,

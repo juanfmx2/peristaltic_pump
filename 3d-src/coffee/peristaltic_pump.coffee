@@ -101,7 +101,8 @@ create_arms_shaft_tower = (params)->
   hex_nut_hole_dims = util.get_object_dimensions hex_nut_hole
   hex_nut_hole = union(
     hex_nut_hole,
-    cube({center:[true,true,false]}).scale([hex_nut_hole_dims.x, hex_nut_hole_dims.x, hex_nut_hole_dims.z])
+    # Use the dimensions of the hexagon in y as it will be the spanner width
+    cube({center:[true,true,false]}).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z])
       .translate([-2.5,0,0])
   )
   hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
