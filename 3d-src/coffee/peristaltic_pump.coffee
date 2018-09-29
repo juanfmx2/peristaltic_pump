@@ -210,14 +210,25 @@ create_pump_arms = (params)->
 
 
 get_rendering_forms = (params)->
-  base_and_screws = create_base_and_screws(params)
-  arms = create_pump_arms(params)
-  arms = translate([0, 0, params.motor_mountingholes_depth + params.motor_ring_height + 1], arms)
-  enclosure = difference(
-    cylinder({r: params.arm_radius + 7, h: 20, center:[true, true ,false]}),
-    cylinder({r: params.arm_radius + 2, h: 20, center:[true, true ,false]})
-  )
-  return [base_and_screws, arms, enclosure]
+  assembled = params.render_style == 'Assembled'
+  shapes_to_draw = []
+
+  if assembled
+    shapes_to_draw.push create_base_and_screws(params)
+
+  if params.render_arms == 'Yes' or params.render_bearings == 'Yes'
+    arms = create_pump_arms(params)
+    if assembled
+      arms = translate([0, 0, params.motor_mountingholes_depth + params.motor_ring_height + 1], arms)
+    shapes_to_draw.push arms
+
+  if params.render_enclosure == 'Yes'
+    enclosure = difference(
+      cylinder({r: params.arm_radius + 7, h: 20, center:[true, true ,false]}),
+      cylinder({r: params.arm_radius + 2, h: 20, center:[true, true ,false]})
+    )
+    shapes_to_draw.push enclosure
+  return shapes_to_draw
 
 # ----------------------------------------------------------------------------------------------------------------------
 # OpenJSCAD functions
