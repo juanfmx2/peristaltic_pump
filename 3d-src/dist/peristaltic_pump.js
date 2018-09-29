@@ -4,9 +4,19 @@
 // license    : GNU GENERAL PUBLIC LICENSE v3
 // tags       : peristaltic pump, parameters
 // file       : parameters.coffee
-var screws;
+var get_yes_no_choice_parameter, screws;
 
 screws = require('./screws.coffee');
+
+get_yes_no_choice_parameter = function(param_name, caption) {
+  return {
+    name: param_name,
+    type: 'choice',
+    caption: caption,
+    values: ['No', 'Yes'],
+    initial: 'Yes'
+  };
+};
 
 exports.get_motor_parameters = function() {
   return [
@@ -48,21 +58,21 @@ exports.get_motor_parameters = function() {
       type: 'float',
       initial: 15.5,
       step: 0.1,
-      caption: 'holes offset'
+      caption: 'Holes Offset'
     },
     {
       name: 'motor_mountingholes_radius',
       type: 'float',
       initial: 1.5,
       step: 0.1,
-      caption: 'holes radius'
+      caption: 'Holes Radius'
     },
     {
       name: 'motor_mountingholes_depth',
       type: 'float',
       initial: 4.5,
       step: 0.1,
-      caption: 'holes depth'
+      caption: 'Holes Depth'
     }
   ];
 };
@@ -79,43 +89,45 @@ exports.get_bearings_parameters = function() {
       type: 'float',
       initial: 10,
       step: 1,
-      caption: 'height'
+      caption: 'Height'
     },
     {
       name: 'bearing_outer_radius',
       type: 'float',
       initial: 6.5,
       step: 0.25,
-      caption: 'outer radius'
+      caption: 'Outer Radius'
     },
     {
       name: 'bearing_screw_type',
       type: 'choice',
       values: screws.available_screw_types,
       initial: 'M3',
-      caption: 'screw type'
+      caption: 'Screw Type'
     },
     {
       name: 'bearing_nut_height',
       type: 'float',
       initial: 1.8,
       step: 0.05,
-      caption: 'nut height'
+      caption: 'Nut Height'
     },
     {
       name: 'bearings_washers_height',
       type: 'float',
       initial: 0.9,
       step: 0.05,
-      caption: 'washers height'
+      caption: 'Washers Height'
     },
     {
       name: 'bearings_washers_radius',
       type: 'float',
       initial: 4.5,
       step: 0.1,
-      caption: 'washers radius'
-    }
+      caption: 'Washers Radius'
+    },
+    get_yes_no_choice_parameter('render_bearings',
+    'Render')
   ];
 };
 
@@ -138,29 +150,31 @@ exports.get_arms_parameters = function() {
       type: 'float',
       initial: 3,
       step: 0.25,
-      caption: 'Arm height'
+      caption: 'Arm Height'
     },
     {
       name: 'arm_radius',
       type: 'float',
       initial: 20,
       step: 0.5,
-      caption: 'Arm radius'
+      caption: 'Arm Radius'
     },
     {
       name: 'arms_shaft_radius',
       type: 'float',
       initial: 6,
       step: 0.25,
-      caption: 'Shaft radius'
+      caption: 'Shaft Radius'
     },
     {
       name: 'arms_shaft_top_height',
       type: 'float',
       initial: 8,
       step: 1,
-      caption: 'Shaft top height'
-    }
+      caption: 'Shaft Top Height'
+    },
+    get_yes_no_choice_parameter('render_arms',
+    'Render')
   ];
 };
 
@@ -172,12 +186,28 @@ exports.get_enclosure_parameters = function() {
       type: 'group'
     },
     {
+      name: 'tubing_outer_radius',
+      type: 'float',
+      initial: 2.5,
+      step: 0.05,
+      caption: 'Tubing Outer Radius'
+    },
+    {
+      name: 'tubing_inner_radius',
+      type: 'float',
+      initial: 2,
+      step: 0.05,
+      caption: 'Tubing Inner Radius'
+    },
+    {
       name: 'enclosure_screw_type',
       type: 'choice',
       values: screws.available_screw_types,
       initial: 'M3',
-      caption: 'screw type'
-    }
+      caption: 'Screw Type'
+    },
+    get_yes_no_choice_parameter('render_enclosure',
+    'Render')
   ];
 };
 
@@ -194,6 +224,14 @@ exports.get_general_parameters = function() {
       initial: 0.3,
       step: 0.025,
       caption: 'Objects Clearance'
+    },
+    {
+      name: 'render_style',
+      type: 'choice',
+      caption: 'Render',
+      values: ['Assembled',
+    '3D Printer Ready'],
+      initial: 'Assembled'
     }
   ];
 };
@@ -376,20 +414,32 @@ create_pump_arms = function(params) {
 };
 
 get_rendering_forms = function(params) {
-  var arms, base_and_screws, enclosure;
-  base_and_screws = create_base_and_screws(params);
-  arms = create_pump_arms(params);
-  arms = translate([0, 0, params.motor_mountingholes_depth + params.motor_ring_height + 1], arms);
-  enclosure = difference(cylinder({
-    r: params.arm_radius + 7,
-    h: 20,
-    center: [true, true, false]
-  }), cylinder({
-    r: params.arm_radius + 2,
-    h: 20,
-    center: [true, true, false]
-  }));
-  return [base_and_screws, arms, enclosure];
+  var arms, assembled, enclosure, shapes_to_draw;
+  assembled = params.render_style === 'Assembled';
+  shapes_to_draw = [];
+  if (assembled) {
+    shapes_to_draw.push(create_base_and_screws(params));
+  }
+  if (params.render_arms === 'Yes' || params.render_bearings === 'Yes') {
+    arms = create_pump_arms(params);
+    if (assembled) {
+      arms = translate([0, 0, params.motor_mountingholes_depth + params.motor_ring_height + 1], arms);
+    }
+    shapes_to_draw.push(arms);
+  }
+  if (params.render_enclosure === 'Yes') {
+    enclosure = difference(cylinder({
+      r: params.arm_radius + 7,
+      h: 20,
+      center: [true, true, false]
+    }), cylinder({
+      r: params.arm_radius + 2,
+      h: 20,
+      center: [true, true, false]
+    }));
+    shapes_to_draw.push(enclosure);
+  }
+  return shapes_to_draw;
 };
 
 // ----------------------------------------------------------------------------------------------------------------------
