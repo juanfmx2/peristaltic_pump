@@ -304,11 +304,30 @@ create_enclosure = (params)->
     center:[true, true ,false]
     fn: 90
   }).translate([0, 0, lid_layer_height])
+
+  tubing_hole = cylinder({
+    r: params.tubing_outer_radius + params.clearance
+    h: box_size/2
+    center:[true, true ,false]
+    fn: 90
+  }).rotateX(90).translate(
+    [
+      0,
+      box_size/2,
+      (
+        params.arms_shaft_top_height + params.clearance + params.arm_height +
+        params.bearings_height/2 + params.bearings_washers_height + lid_layer_height
+      )
+    ]
+  )
+
   middle_section_box = difference(
     base_box,
     inner_hole,
     bottom_inner_hole,
     lid_delete_geom,
+    tubing_hole.translate([box_size/6, 0, 0]),
+    tubing_hole.translate([-box_size/6, 0, 0]),
     lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
   )
   enclosure_parts.push color('yellow', middle_section_box).translate([0, 0, if assembled then 0 else 3])
