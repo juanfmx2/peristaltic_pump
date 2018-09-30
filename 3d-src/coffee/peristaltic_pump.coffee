@@ -97,7 +97,7 @@ create_arms_shaft_tower = (params)->
     hex_nut_hole,
     # Use the dimensions of the hexagon in y as it will be the spanner width
     cube({center:[true,true,false]}).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z])
-      .translate([-2.5,0,0])
+      .translate([-hex_nut_hole_dims.y/2,0,0])
   )
   hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
   hex_nut_hole = position_holder_nut_geom(hex_nut_hole)
@@ -230,6 +230,17 @@ create_screw_hole = (params, head_radius, thread_radius, head_height, thread_hei
     ).translate([0, 0, if z_inverted then thread_height else 0])
   )
 
+create_screw_nut_holes_by_offset = (screw_type, thread_height, z_inverted=false)->
+  hex_nut_hole = screw_type.draw_nut_hole(params.bearing_nut_height, params.clearance)
+  hex_nut_hole_dims = util.get_object_dimensions hex_nut_hole
+  hex_nut_hole = union(
+    hex_nut_hole,
+    # Use the dimensions of the hexagon in y as it will be the spanner width
+    cube({center:[true,true,false]}).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z])
+      .translate([-hex_nut_hole_dims.y/2,0,0])
+  )
+  hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
+
 create_screw_holes_by_offset = (base_screw_hole, offset)->
   return union(
     translate([ offset,  offset, 0], base_screw_hole)
@@ -320,6 +331,8 @@ create_enclosure = (params)->
       )
     ]
   )
+
+
 
   middle_section_box = difference(
     base_box,
