@@ -240,59 +240,69 @@ create_screw_holes_by_offset = (base_screw_hole, offset)->
 
 create_enclosure = (params)->
   enclosure_parts = []
+  arms_delta = get_arms_delta params
+  assembled = params.render_style == 'Assembled'
   cur_screw = screws.get_screw_by_type params.enclosure_screw_type
   compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) + params.clearance
   box_size = 2*(params.arm_radius + compressed_tube_width + cur_screw.diameter)+3
-  box_height = 20
+  lid_layer_height = 6
+  middle_section_height = 2*params.arm_height + arms_delta + params.arms_shaft_top_height
+  box_height = middle_section_height + 2*lid_layer_height
+
   base_box = CSG.roundedCube
     radius: [box_size/2, box_size/2, box_height/2]
     center: [0, 0, box_height/2]
     roundradius: 3,
     resolution: 20,
-  bottom_layer_height = 6
 
-  inner_hole = cylinder({
-    r: params.arm_radius + compressed_tube_width
-    h: box_height - bottom_layer_height
-    center:[true, true ,false]
-    fn: 90
-  }).translate([0, 0, bottom_layer_height])
-  mounting_motor_hole = cylinder({
-    r: params.motor_ring_radius + 2*params.clearance
-    h: bottom_layer_height
-    center:[true, true ,false]
-    fn: 90
+  middle_and_lid_delete_geom = cube({
+    size: [box_size, box_size, box_height - lid_layer_height],
+    center: [true, true, false]
   })
-  base_box = difference(
-    base_box,
-    inner_hole
-  )
-
+  lid_delete_geom = cube({
+    size: [box_size, box_size, lid_layer_height],
+    center: [true, true, false]
+  })
   base_screw_hole = create_screw_hole(
-    params, cur_screw.head_radius, cur_screw.radius, bottom_layer_height/2, bottom_layer_height/2
+    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
   )
   base_screws_holes = create_screw_holes_by_offset(base_screw_hole, params.motor_mountingholes_offset)
   base_screw_hole_2_middle_section = create_screw_hole(
-    params, cur_screw.head_radius, cur_screw.radius, bottom_layer_height/2, bottom_layer_height/2, true
+    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2, true
   )
   base_screws_holes_2_middle_section = create_screw_holes_by_offset(
     base_screw_hole_2_middle_section, box_size/2 - cur_screw.head_radius - 2
   )
+  mounting_motor_hole = cylinder({
+    r: params.motor_ring_radius + 2*params.clearance
+    h: lid_layer_height
+    center:[true, true ,false]
+    fn: 90
+  })
 
   bottom_part = difference(
     base_box,
     mounting_motor_hole,
     base_screws_holes,
     base_screws_holes_2_middle_section,
-    cube(
-      {
-        size: [box_size,box_size, box_height - bottom_layer_height],
-        center: [true, true, false]
-      }
-    ).translate([0,0,bottom_layer_height])
+    middle_and_lid_delete_geom.translate([0, 0, lid_layer_height])
   )
+  enclosure_parts.push color('blue', bottom_part)
 
-  enclosure_parts.push bottom_part
+  inner_hole = cylinder({
+    r: params.arm_radius + compressed_tube_width
+    h: box_height - lid_layer_height
+    center:[true, true ,false]
+    fn: 90
+  }).translate([0, 0, lid_layer_height])
+  middle_section_box = difference(
+    base_box,
+    inner_hole,
+    lid_delete_geom,
+    lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
+  )
+  enclosure_parts.push middle_section_box
+
   return union enclosure_parts
 
 get_pump_shapes = (params)->
