@@ -230,16 +230,26 @@ create_screw_hole = (params, head_radius, thread_radius, head_height, thread_hei
     ).translate([0, 0, if z_inverted then thread_height else 0])
   )
 
-create_screw_nut_holes_by_offset = (screw_type, thread_height, z_inverted=false)->
+create_screw_nut_holes_by_offset = (screw_type, thread_height, offset, z_inverted=false)->
   hex_nut_hole = screw_type.draw_nut_hole(params.bearing_nut_height, params.clearance)
   hex_nut_hole_dims = util.get_object_dimensions hex_nut_hole
   hex_nut_hole = union(
     hex_nut_hole,
     # Use the dimensions of the hexagon in y as it will be the spanner width
-    cube({center:[true,true,false]}).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z])
-      .translate([-hex_nut_hole_dims.y/2,0,0])
+    cube({center:[true,true,false]}).scale([3*hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z])
+      .translate([-3*hex_nut_hole_dims.y/2,0,0])
+  ).translate([0, 0, if z_inverted then 0 else thread_height])
+  hex_nut_hole = union(
+    hex_nut_hole,
+    cylinder({r: screw_type.radius, h: thread_height, center: [true, true, false]})
+      .translate([0, 0, if z_inverted then hex_nut_hole_dims.z else 0])
   )
-  hex_nut_hole = union(hex_nut_hole, cylinder({r: cur_screw.radius, h: 10, center: true}))
+  return union(
+    translate([ offset,  offset, 0], hex_nut_hole.rotateZ(180))
+    translate([ offset, -offset, 0], hex_nut_hole.rotateZ(180))
+    translate([-offset,  offset, 0], hex_nut_hole)
+    translate([-offset, -offset, 0], hex_nut_hole)
+  )
 
 create_screw_holes_by_offset = (base_screw_hole, offset)->
   return union(
@@ -259,6 +269,7 @@ create_enclosure = (params)->
   lid_layer_height = 6
   middle_section_height = 2*(params.arm_height+params.clearance) + arms_delta + params.arms_shaft_top_height
   box_height = middle_section_height + 2*lid_layer_height
+  outer_screws_offset = box_size/2 - cur_screw.head_radius - 2
 
   base_box = CSG.roundedCube
     radius: [box_size/2, box_size/2, box_height/2]
@@ -282,7 +293,7 @@ create_enclosure = (params)->
     params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2, true
   )
   base_screws_holes_2_middle_section = create_screw_holes_by_offset(
-    base_screw_hole_2_middle_section, box_size/2 - cur_screw.head_radius - 2
+    base_screw_hole_2_middle_section, outer_screws_offset
   )
   mounting_motor_hole = cylinder({
     r: params.motor_ring_radius + 2*params.clearance
@@ -331,9 +342,8 @@ create_enclosure = (params)->
       )
     ]
   )
-
-
-
+  top_hex_nut_holes = create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset, true)
+  top_hex_nut_holes_dims = util.get_object_dimensions top_hex_nut_holes
   middle_section_box = difference(
     base_box,
     inner_hole,
@@ -341,6 +351,8 @@ create_enclosure = (params)->
     lid_delete_geom,
     tubing_hole.translate([box_size/6, 0, 0]),
     tubing_hole.translate([-box_size/6, 0, 0]),
+    create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset).translate([0, 0, lid_layer_height]),
+    top_hex_nut_holes.translate([0, 0, lid_layer_height + middle_section_height - top_hex_nut_holes_dims.z])
     lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
   )
   enclosure_parts.push color('yellow', middle_section_box).translate([0, 0, if assembled then 0 else 3])
