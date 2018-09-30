@@ -62,7 +62,7 @@ exports.get_enclosure_parameters = ->
   return [
     {name: 'enclosure', caption: 'Enclosure', type: 'group'}
     {name: 'tubing_outer_radius', type: 'float', initial: 2.5, step: 0.05, caption: 'Tubing Outer Radius'}
-    {name: 'tubing_inner_radius', type: 'float', initial: 2, step: 0.05, caption: 'Tubing Inner Radius'}
+    {name: 'tubing_inner_radius', type: 'float', initial: 1.5, step: 0.05, caption: 'Tubing Inner Radius'}
     {
       name: 'enclosure_screw_type'
       type: 'choice'
