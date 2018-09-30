@@ -289,6 +289,7 @@ create_enclosure = (params)->
     params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
   )
   base_screws_holes = create_screw_holes_by_offset(base_screw_hole, params.motor_mountingholes_offset)
+
   base_screw_hole_2_middle_section = create_screw_hole(
     params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2, true
   )
@@ -356,6 +357,21 @@ create_enclosure = (params)->
     lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
   )
   enclosure_parts.push color('yellow', middle_section_box).translate([0, 0, if assembled then 0 else 3])
+
+
+  top_screw_hole_2_middle_section = create_screw_hole(
+    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
+  )
+  top_screws_holes_2_middle_section = create_screw_holes_by_offset(
+    top_screw_hole_2_middle_section, outer_screws_offset
+  )
+
+  top_part = difference(
+    base_box,
+    middle_and_lid_delete_geom,
+    top_screws_holes_2_middle_section.translate([0, 0, lid_layer_height + middle_section_height])
+  )
+  enclosure_parts.push color('blue', top_part).translate([0, 0, if assembled then 0 else 6])
 
   return union enclosure_parts
 
