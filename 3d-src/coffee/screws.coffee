@@ -24,6 +24,7 @@ class ScrewType
     @nut_diameter = 2.0 * @spanner_size / sqrt_3
     @nut_radius = @nut_diameter/2
     @radius = @diameter/2
+    @head_radius = @head_diameter/2
     @thread_data = {
       coarse:
         pitch: coarse_pitch
