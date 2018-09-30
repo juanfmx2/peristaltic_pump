@@ -244,9 +244,9 @@ create_enclosure = (params)->
   assembled = params.render_style == 'Assembled'
   cur_screw = screws.get_screw_by_type params.enclosure_screw_type
   compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) + params.clearance
-  box_size = 2*(params.arm_radius + compressed_tube_width + cur_screw.diameter)+3
+  box_size = 2*(params.arm_radius + compressed_tube_width + cur_screw.diameter) + 5
   lid_layer_height = 6
-  middle_section_height = 2*params.arm_height + arms_delta + params.arms_shaft_top_height
+  middle_section_height = 2*(params.arm_height+params.clearance) + arms_delta + params.arms_shaft_top_height
   box_height = middle_section_height + 2*lid_layer_height
 
   base_box = CSG.roundedCube
@@ -289,19 +289,29 @@ create_enclosure = (params)->
   )
   enclosure_parts.push color('blue', bottom_part)
 
+  bottom_hole_height = params.arms_shaft_top_height - (cur_screw.head_height + params.clearance)
+
   inner_hole = cylinder({
     r: params.arm_radius + compressed_tube_width
-    h: box_height - lid_layer_height
+    h: box_height - 2*lid_layer_height - bottom_hole_height
+    center:[true, true ,false]
+    fn: 90
+  }).translate([0, 0, lid_layer_height + bottom_hole_height])
+
+  bottom_inner_hole = cylinder({
+    r: params.motor_ring_radius + 2*params.clearance
+    h: bottom_hole_height
     center:[true, true ,false]
     fn: 90
   }).translate([0, 0, lid_layer_height])
   middle_section_box = difference(
     base_box,
     inner_hole,
+    bottom_inner_hole,
     lid_delete_geom,
     lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
   )
-  enclosure_parts.push middle_section_box
+  enclosure_parts.push color('yellow', middle_section_box).translate([0, 0, if assembled then 0 else 3])
 
   return union enclosure_parts
 
@@ -337,7 +347,7 @@ get_pump_shapes = (params)->
     shapes_to_draw.push enclosure
 
   if assembled
-    arms_z_pos = params.motor_mountingholes_depth + params.motor_ring_height + 2*params.clearance
+    arms_z_pos = params.motor_mountingholes_depth + 6
     shapes_to_draw = []
     if arms_holder?
       arms_dims = util.get_object_dimensions(arms_holder)
