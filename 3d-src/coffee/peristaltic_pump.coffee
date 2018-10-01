@@ -356,7 +356,25 @@ create_enclosure = (params)->
     top_hex_nut_holes.translate([0, 0, lid_layer_height + middle_section_height - top_hex_nut_holes_dims.z])
     lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
   )
-  enclosure_parts.push color('yellow', middle_section_box).translate([0, 0, if assembled then 0 else 3])
+  cut_lenght = 2*box_size/3 + params.clearance
+  trimming_box_1 = cube(
+    {size:[box_size, cut_lenght, middle_section_height], center:[true, true, false]}
+  ).translate(
+    [0, -(box_size-cut_lenght)/2 , lid_layer_height]
+  )
+  middle_section_box_1 = difference(middle_section_box, trimming_box_1)
+  middle_section_box_1 = color('yellow', middle_section_box_1)
+  enclosure_parts.push middle_section_box_1.translate([0, 0, if assembled then 0 else 3])
+
+  cut_lenght = box_size - cut_lenght + 2*params.clearance
+  trimming_box_2 = cube(
+    {size:[box_size, cut_lenght, middle_section_height], center:[true, true, false]}
+  ).translate(
+    [0, (box_size-cut_lenght)/2 , lid_layer_height]
+  )
+  middle_section_box_2 = difference(middle_section_box, trimming_box_2)
+  middle_section_box_2 = middle_section_box_2.setColor([0.7, 0.7, 0, 0.5])
+  enclosure_parts.push middle_section_box_2.translate([0, 0, if assembled then 0 else 3])
 
 
   top_screw_hole_2_middle_section = create_screw_hole(
@@ -371,7 +389,8 @@ create_enclosure = (params)->
     middle_and_lid_delete_geom,
     top_screws_holes_2_middle_section.translate([0, 0, lid_layer_height + middle_section_height])
   )
-  enclosure_parts.push color('blue', top_part).translate([0, 0, if assembled then 0 else 6])
+  top_part = top_part.setColor([0, 0.3, 0.7, 0.5])
+  enclosure_parts.push top_part.translate([0, 0, if assembled then 0 else 6])
 
   return union enclosure_parts
 
