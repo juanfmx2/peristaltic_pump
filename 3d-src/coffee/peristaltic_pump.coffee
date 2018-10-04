@@ -268,7 +268,7 @@ create_enclosure = (params)->
   box_size = 2*(params.arm_radius + compressed_tube_width + cur_screw.diameter) + 5
   lid_layer_height = 6
   middle_section_height = 2*(params.arm_height+params.clearance) + arms_delta + params.arms_shaft_top_height
-  box_height = middle_section_height + 2*lid_layer_height
+  box_height = middle_section_height + lid_layer_height
   outer_screws_offset = box_size/2 - cur_screw.head_radius - 2
 
   base_box = CSG.roundedCube
@@ -276,6 +276,17 @@ create_enclosure = (params)->
     center: [0, 0, box_height/2]
     roundradius: 3,
     resolution: 20,
+
+  cut_sphere_radius = box_size/2-cur_screw.head_diameter*2.3
+  cut_sphere = sphere({r: cut_sphere_radius, fn: 30, type: 'geodesic'})
+  translate_delta = box_size/2
+  base_box = difference(
+    base_box,
+    cut_sphere.translate([ translate_delta,                0]),
+    cut_sphere.translate([-translate_delta,                0]),
+    cut_sphere.translate([               0,  translate_delta]),
+    cut_sphere.translate([               0, -translate_delta]),
+  )
 
   middle_and_lid_delete_geom = cube({
     size: [box_size, box_size, box_height - lid_layer_height],
@@ -316,7 +327,7 @@ create_enclosure = (params)->
 
   inner_hole = cylinder({
     r: params.arm_radius + compressed_tube_width
-    h: box_height - 2*lid_layer_height - bottom_hole_height
+    h: box_height - lid_layer_height - bottom_hole_height
     center:[true, true ,false]
     fn: 90
   }).translate([0, 0, lid_layer_height + bottom_hole_height])
@@ -343,18 +354,14 @@ create_enclosure = (params)->
       )
     ]
   )
-  top_hex_nut_holes = create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset, true)
-  top_hex_nut_holes_dims = util.get_object_dimensions top_hex_nut_holes
   middle_section_box = difference(
     base_box,
     inner_hole,
     bottom_inner_hole,
     lid_delete_geom,
-    tubing_hole.translate([box_size/6, 0, 0]),
-    tubing_hole.translate([-box_size/6, 0, 0]),
-    create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset).translate([0, 0, lid_layer_height]),
-    top_hex_nut_holes.translate([0, 0, lid_layer_height + middle_section_height - top_hex_nut_holes_dims.z])
-    lid_delete_geom.translate([0, 0, box_height - lid_layer_height])
+    tubing_hole.translate([box_size/3, 0, 0]),
+    tubing_hole.translate([-box_size/3, 0, 0]),
+    create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset).translate([0, 0, lid_layer_height])
   )
   cut_lenght = 2*box_size/3 + params.clearance
   trimming_box_1 = cube(
@@ -377,20 +384,20 @@ create_enclosure = (params)->
   enclosure_parts.push middle_section_box_2.translate([0, 0, if assembled then 0 else 3])
 
 
-  top_screw_hole_2_middle_section = create_screw_hole(
-    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
-  )
-  top_screws_holes_2_middle_section = create_screw_holes_by_offset(
-    top_screw_hole_2_middle_section, outer_screws_offset
-  )
-
-  top_part = difference(
-    base_box,
-    middle_and_lid_delete_geom,
-    top_screws_holes_2_middle_section.translate([0, 0, lid_layer_height + middle_section_height])
-  )
-  top_part = top_part.setColor([0, 0.3, 0.7, 0.5])
-  enclosure_parts.push top_part.translate([0, 0, if assembled then 0 else 6])
+#  top_screw_hole_2_middle_section = create_screw_hole(
+#    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
+#  )
+#  top_screws_holes_2_middle_section = create_screw_holes_by_offset(
+#    top_screw_hole_2_middle_section, outer_screws_offset
+#  )
+#
+#  top_part = difference(
+#    base_box,
+#    middle_and_lid_delete_geom,
+#    top_screws_holes_2_middle_section.translate([0, 0, lid_layer_height + middle_section_height])
+#  )
+#  top_part = top_part.setColor([0, 0.3, 0.7, 0.5])
+#  enclosure_parts.push top_part.translate([0, 0, if assembled then 0 else 6])
 
   return union enclosure_parts
 
