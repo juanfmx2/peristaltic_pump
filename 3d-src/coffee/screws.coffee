@@ -126,7 +126,8 @@ class ScrewType
     return screw
 
   draw_nut_hole: (height, clearance=0)->
-    return util.create_extruded_regular_polygon(@nut_radius + 2*clearance, height + 2*clearance, 6)
+    hole_radius = (@spanner_size + 2*clearance) / Math.pow(3.0, 0.5)
+    return util.create_extruded_regular_polygon(hole_radius, height + 2*clearance, 6)
 
   draw_nut: (params)->
     if !_.isObject params
