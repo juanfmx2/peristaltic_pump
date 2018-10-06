@@ -108,9 +108,18 @@ global.main = (params)->
 
   hex_nut_hole = big_screw_type.draw_nut_hole(params.big_nut_height, params.clearance)
   hex_nut_hole_dims = util.get_object_dimensions hex_nut_hole
+  hex_nut_hole = union(
+    hex_nut_hole,
+    cube(
+      {
+        size: [x_width/2, hex_nut_hole_dims.y, hex_nut_hole_dims.z]
+        center: [true, true, false]
+      }
+    ).translate([x_width/4, 0, 0])
+  )
   flap_b = difference(
     base_flap,
-    hex_nut_hole.translate([flaps_size/2, 0, params.thickness - hex_nut_hole_dims.z])
+    hex_nut_hole.translate([flaps_size/2, 0, (params.thickness - hex_nut_hole_dims.z)/2])
   ).translate([flap_x_pos, 0, 0])
   shape_b= color('yellow', union(base_shape, flap_b, flap_b.rotateZ(180)))
 
