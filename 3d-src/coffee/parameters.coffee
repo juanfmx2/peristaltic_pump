@@ -64,6 +64,7 @@ exports.get_enclosure_parameters = ->
     {name: 'box_width', type: 'float', initial: 58, step: 0.5, caption: 'Box Width'}
     {name: 'thumb_screw_diameter', type: 'float', initial: 8.5, step: 0.5, caption: 'Thumb Screw Diameter'}
     {name: 'thumb_screw_length', type: 'float', initial: 9.5, step: 0.5, caption: 'Thumb Screw Length'}
+    {name: 'enclosure_holder_thickness', type: 'float', initial: 3.5, step: 0.5, caption: 'Enclosure Holder Thickness'}
     {name: 'tubing_outer_radius', type: 'float', initial: 2.5, step: 0.05, caption: 'Tubing Outer Radius'}
     {name: 'tubing_inner_radius', type: 'float', initial: 1.5, step: 0.05, caption: 'Tubing Inner Radius'}
     {
