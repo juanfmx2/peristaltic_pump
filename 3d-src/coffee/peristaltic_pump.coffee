@@ -103,7 +103,7 @@ create_arms_shaft_tower = (params)->
   hex_nut_hole = position_holder_nut_geom(hex_nut_hole)
 
   hex_nut_hole_wrapper = util.create_extruded_regular_polygon(
-    cur_screw.nut_radius + 1.7, params.bearing_nut_height + 2*(params.clearance + 0.8), 6
+    cur_screw.nut_radius + 2, params.bearing_nut_height + 2*(params.clearance + 0.8), 6
   )
   hex_nut_hole_wrapper = position_holder_nut_geom(hex_nut_hole_wrapper)
 
@@ -143,11 +143,15 @@ create_pump_arms = (params)->
     )
   )
 
-  hex_nut = util.create_extruded_regular_polygon(cur_screw.nut_radius, params.bearing_nut_height, 6)
+  hex_nut = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance)
 
   base_bottom_arm = difference(
     base_arm, translate([radius_to_bearings, 0, 0],
-      rotate([0, 0, -middle_path_angle], hex_nut)
+      cylinder
+        r: cur_screw.head_radius
+        h: params.bearing_nut_height
+        fn: 90
+        center: [true, true, false]
     )
   )
 
@@ -192,6 +196,7 @@ create_bearings = (params)->
     cylinder
       r: params.bearing_outer_radius
       h: params.bearings_height
+      fn: 90
       center:[true, true, false]
   ))
   if assembled
