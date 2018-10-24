@@ -402,34 +402,6 @@ create_enclosure = (params)->
     middle_section_box_2 = middle_section_box_2.translate([0, box_size+5*params.clearance, -lid_layer_height])
   enclosure_parts.push middle_section_box_2
 
-  holder_t = params.enclosure_holder_thickness
-  holder_wall = CSG.roundedCube
-    radius: [holder_t/2, box_size/2 + holder_t, holder_t]
-    center: [holder_t/2 + box_size/2, 0, holder_t]
-    roundradius: holder_t*0.25
-    resolution: 20
-
-  holder = union(
-    holder_wall,
-    holder_wall.rotateZ(90),
-    holder_wall.rotateZ(180),
-    holder_wall.rotateZ(270)
-  )
-  holder_1 = holder_t
-  holder_2 = holder_t
-  if not assembled
-    holder_1 = holder.translate(
-      [box_size + 5*params.clearance + holder_t, 0, 0]
-    )
-    holder_2 = holder.translate(
-      [box_size + 5*params.clearance + holder_t, box_size + 5*params.clearance + 2*holder_t, 0]
-    )
-  else
-    holder_1 = holder.translate([0, 0, box_height - 2*holder_t])
-    holder_2 = holder.translate([0, 0, box_height - 4*holder_t - params.tubing_outer_radius*2])
-  enclosure_parts.push holder_1
-  enclosure_parts.push holder_2
-
   return union enclosure_parts
 
 get_pump_shapes = (params)->
