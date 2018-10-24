@@ -148,7 +148,7 @@ create_pump_arms = (params)->
   base_bottom_arm = difference(
     base_arm, translate([radius_to_bearings, 0, 0],
       cylinder
-        r: cur_screw.head_radius
+        r: cur_screw.head_radius + params.clearance
         h: params.bearing_nut_height
         fn: 90
         center: [true, true, false]
