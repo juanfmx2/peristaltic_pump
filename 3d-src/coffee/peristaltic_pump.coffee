@@ -264,7 +264,7 @@ create_enclosure = (params)->
   arms_delta = get_arms_delta params
   assembled = params.render_style == 'Assembled'
   cur_screw = screws.get_screw_by_type params.enclosure_screw_type
-  compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) - 1.6*params.clearance
+  compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) - 2*params.clearance
   box_size = params.box_width
   lid_layer_height = 6
   middle_section_height = 2*(params.arm_height+params.clearance) + arms_delta + params.arms_shaft_top_height
