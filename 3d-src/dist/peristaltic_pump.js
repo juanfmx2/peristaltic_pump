@@ -186,6 +186,27 @@ exports.get_enclosure_parameters = function() {
       type: 'group'
     },
     {
+      name: 'box_width',
+      type: 'float',
+      initial: 58,
+      step: 0.5,
+      caption: 'Box Width'
+    },
+    {
+      name: 'thumb_screw_diameter',
+      type: 'float',
+      initial: 8.5,
+      step: 0.5,
+      caption: 'Thumb Screw Diameter'
+    },
+    {
+      name: 'thumb_screw_length',
+      type: 'float',
+      initial: 9.5,
+      step: 0.5,
+      caption: 'Thumb Screw Length'
+    },
+    {
       name: 'tubing_outer_radius',
       type: 'float',
       initial: 2.5,
@@ -462,13 +483,13 @@ create_screw_holes_by_offset = function(base_screw_hole, offset) {
 };
 
 create_enclosure = function(params) {
-  var arms_delta, assembled, base_box, base_screw_hole, base_screw_hole_2_middle_section, base_screws_holes, base_screws_holes_2_middle_section, bottom_hole_height, bottom_inner_hole, bottom_part, box_height, box_size, compressed_tube_width, cur_screw, cut_lenght, cut_sphere, cut_sphere_radius, enclosure_parts, inner_hole, lid_delete_geom, lid_layer_height, middle_and_lid_delete_geom, middle_section_box, middle_section_box_1, middle_section_box_2, middle_section_height, mounting_motor_hole, outer_screws_offset, translate_delta, trimming_box_1, trimming_box_2, tubing_hole;
+  var arms_delta, assembled, base_box, base_screw_hole, base_screw_hole_2_middle_section, base_screws_holes, base_screws_holes_2_middle_section, bottom_hole_height, bottom_inner_hole, bottom_part, box_height, box_size, compressed_tube_width, cur_screw, cut_length, cut_sphere, cut_sphere_radius, enclosure_parts, inner_hole, length_to_nut, lid_delete_geom, lid_layer_height, middle_and_lid_delete_geom, middle_section_box, middle_section_box_1, middle_section_box_2, middle_section_height, mounting_motor_hole, outer_screws_offset, translate_delta, trimming_box_1, trimming_box_2, tubing_hole, tubing_position_x;
   enclosure_parts = [];
   arms_delta = get_arms_delta(params);
   assembled = params.render_style === 'Assembled';
   cur_screw = screws.get_screw_by_type(params.enclosure_screw_type);
-  compressed_tube_width = 2 * (params.tubing_outer_radius - params.tubing_inner_radius) + params.clearance;
-  box_size = 2 * (params.arm_radius + compressed_tube_width + cur_screw.diameter) + 5;
+  compressed_tube_width = 2 * (params.tubing_outer_radius - params.tubing_inner_radius);
+  box_size = params.box_width;
   lid_layer_height = 6;
   middle_section_height = 2 * (params.arm_height + params.clearance) + arms_delta + params.arms_shaft_top_height;
   box_height = middle_section_height + lid_layer_height;
@@ -497,7 +518,7 @@ create_enclosure = function(params) {
   });
   base_screw_hole = create_screw_hole(params, cur_screw.head_radius, cur_screw.radius, lid_layer_height / 2, lid_layer_height / 2);
   base_screws_holes = create_screw_holes_by_offset(base_screw_hole, params.motor_mountingholes_offset);
-  base_screw_hole_2_middle_section = create_screw_hole(params, cur_screw.head_radius, cur_screw.radius, lid_layer_height / 2, lid_layer_height / 2, true);
+  base_screw_hole_2_middle_section = create_screw_hole(params, params.thumb_screw_diameter / 2, cur_screw.radius, lid_layer_height / 2, lid_layer_height / 2, true);
   base_screws_holes_2_middle_section = create_screw_holes_by_offset(base_screw_hole_2_middle_section, outer_screws_offset);
   mounting_motor_hole = cylinder({
     r: params.motor_ring_radius + 2 * params.clearance,
@@ -506,7 +527,11 @@ create_enclosure = function(params) {
     fn: 90
   });
   bottom_part = difference(base_box, mounting_motor_hole, base_screws_holes, base_screws_holes_2_middle_section, middle_and_lid_delete_geom.translate([0, 0, lid_layer_height]));
-  enclosure_parts.push(color('blue', bottom_part));
+  bottom_part = color('blue', bottom_part);
+  if (!assembled) {
+    bottom_part = bottom_part.rotateX(180).translate([0, 0, lid_layer_height]);
+  }
+  enclosure_parts.push(bottom_part);
   bottom_hole_height = params.arms_shaft_top_height - (cur_screw.head_height + params.clearance);
   inner_hole = cylinder({
     r: params.arm_radius + compressed_tube_width,
@@ -525,38 +550,43 @@ create_enclosure = function(params) {
     h: box_size / 2,
     center: [true, true, false],
     fn: 90
-  }).rotateX(90).translate([0, box_size / 2, params.arms_shaft_top_height + params.clearance + params.arm_height + params.bearings_height / 2 + params.bearings_washers_height + lid_layer_height]);
-  middle_section_box = difference(base_box, inner_hole, bottom_inner_hole, lid_delete_geom, tubing_hole.translate([box_size / 3, 0, 0]), tubing_hole.translate([-box_size / 3, 0, 0]), create_screw_nut_holes_by_offset(cur_screw, 1.5, outer_screws_offset).translate([0, 0, lid_layer_height]));
-  cut_lenght = 2 * box_size / 3 + params.clearance;
+  }).rotateX(90).translate([0, box_size / 2, box_height - params.arm_height - arms_delta / 2]);
+  tubing_position_x = params.arm_radius + compressed_tube_width - (params.tubing_outer_radius + params.clearance);
+  length_to_nut = params.thumb_screw_length - lid_layer_height / 2;
+  middle_section_box = difference(base_box, inner_hole, bottom_inner_hole, lid_delete_geom, tubing_hole.translate([tubing_position_x, 0, 0]), tubing_hole.translate([-tubing_position_x, 0, 0]), create_screw_nut_holes_by_offset(cur_screw, length_to_nut, outer_screws_offset).translate([0, 0, lid_layer_height]));
+  middle_section_box = union(middle_section_box, torus({
+    ri: params.arm_height / 2,
+    ro: params.arm_radius + compressed_tube_width,
+    fni: 4,
+    fno: 100
+  }).translate([0, 0, box_height - params.arm_height / 2]), torus({
+    ri: params.arm_height / 2,
+    ro: params.arm_radius + compressed_tube_width,
+    fni: 4,
+    fno: 100
+  }).translate([0, 0, box_height - (3 * params.arm_height / 2 + arms_delta)]));
+  cut_length = 2 * box_size / 3 + params.clearance;
   trimming_box_1 = cube({
-    size: [box_size, cut_lenght, middle_section_height],
+    size: [box_size, cut_length, middle_section_height],
     center: [true, true, false]
-  }).translate([0, -(box_size - cut_lenght) / 2, lid_layer_height]);
+  }).translate([0, -(box_size - cut_length) / 2, lid_layer_height]);
   middle_section_box_1 = difference(middle_section_box, trimming_box_1);
   middle_section_box_1 = color('yellow', middle_section_box_1);
-  enclosure_parts.push(middle_section_box_1.translate([0, 0, assembled ? 0 : 3]));
-  cut_lenght = box_size - cut_lenght + 2 * params.clearance;
+  if (!assembled) {
+    middle_section_box_1 = middle_section_box_1.translate([0, box_size + 5 * params.clearance, -lid_layer_height]);
+  }
+  enclosure_parts.push(middle_section_box_1);
+  cut_length = box_size - cut_length + 2 * params.clearance;
   trimming_box_2 = cube({
-    size: [box_size, cut_lenght, middle_section_height],
+    size: [box_size, cut_length, middle_section_height],
     center: [true, true, false]
-  }).translate([0, (box_size - cut_lenght) / 2, lid_layer_height]);
+  }).translate([0, (box_size - cut_length) / 2, lid_layer_height]);
   middle_section_box_2 = difference(middle_section_box, trimming_box_2);
   middle_section_box_2 = middle_section_box_2.setColor([0.7, 0.7, 0, 0.5]);
-  enclosure_parts.push(middle_section_box_2.translate([0, 0, assembled ? 0 : 3]));
-  //  top_screw_hole_2_middle_section = create_screw_hole(
-  //    params, cur_screw.head_radius, cur_screw.radius, lid_layer_height/2, lid_layer_height/2
-  //  )
-  //  top_screws_holes_2_middle_section = create_screw_holes_by_offset(
-  //    top_screw_hole_2_middle_section, outer_screws_offset
-  //  )
-
-  //  top_part = difference(
-  //    base_box,
-  //    middle_and_lid_delete_geom,
-  //    top_screws_holes_2_middle_section.translate([0, 0, lid_layer_height + middle_section_height])
-  //  )
-  //  top_part = top_part.setColor([0, 0.3, 0.7, 0.5])
-  //  enclosure_parts.push top_part.translate([0, 0, if assembled then 0 else 6])
+  if (!assembled) {
+    middle_section_box_2 = middle_section_box_2.translate([0, box_size + 5 * params.clearance, -lid_layer_height]);
+  }
+  enclosure_parts.push(middle_section_box_2);
   return union(enclosure_parts);
 };
 
@@ -785,7 +815,9 @@ ScrewType = (function() {
     }
 
     draw_nut_hole(height, clearance = 0) {
-      return util.create_extruded_regular_polygon(this.nut_radius + 2 * clearance, height + 2 * clearance, 6);
+      var hole_radius;
+      hole_radius = (this.spanner_size + 2 * clearance) / Math.pow(3.0, 0.5);
+      return util.create_extruded_regular_polygon(hole_radius, height + 2 * clearance, 6);
     }
 
     draw_nut(params) {
