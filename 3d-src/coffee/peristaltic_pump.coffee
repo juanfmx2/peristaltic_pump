@@ -264,7 +264,7 @@ create_enclosure = (params)->
   arms_delta = get_arms_delta params
   assembled = params.render_style == 'Assembled'
   cur_screw = screws.get_screw_by_type params.enclosure_screw_type
-  compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) - params.clearance
+  compressed_tube_width = 2*(params.tubing_outer_radius - params.tubing_inner_radius) - 1.6*params.clearance
   box_size = params.box_width
   lid_layer_height = 6
   middle_section_height = 2*(params.arm_height+params.clearance) + arms_delta + params.arms_shaft_top_height
@@ -369,14 +369,47 @@ create_enclosure = (params)->
     tubing_hole.translate([-tubing_position_x, 0, 0]),
     create_screw_nut_holes_by_offset(cur_screw, length_to_nut, outer_screws_offset).translate([0, 0, lid_layer_height])
   )
+
+  rim_radius = 1.5 * params.arm_height/2
   middle_section_box = union(
     middle_section_box,
-    torus({ ri: params.arm_height/2, ro: params.arm_radius + compressed_tube_width, fni:4, fno:100})\
+    torus({ ri: rim_radius, ro: params.arm_radius + compressed_tube_width, fni:4, fno:100})\
       .translate([0, 0, box_height-params.arm_height/2]),
-    torus({ ri: params.arm_height/2, ro: params.arm_radius + compressed_tube_width, fni:4, fno:100})\
+    torus({ ri: rim_radius, ro: params.arm_radius + compressed_tube_width, fni:4, fno:100})\
       .translate([0, 0, box_height-(3*params.arm_height/2 + arms_delta)])
   )
+
+  # Top screw rails
   cut_length = 2*box_size/3 + params.clearance
+  screw_rail = cylinder
+    r: cur_screw.radius
+    h: box_size
+    center: true
+    fn: 90
+  distance_to_wall = 1.5
+  distance_to_nut = cut_length - box_size/2
+  hex_nut_hole = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance).rotateZ(90).rotateX(90)
+  hex_nut_hole_dims = util.get_object_dimensions(hex_nut_hole)
+  hex_nut_hole = union(
+    hex_nut_hole,
+    cube({
+      size: [hex_nut_hole_dims.x, hex_nut_hole_dims.y, hex_nut_hole_dims.z],
+      center: [true, false, false]
+    }).translate([0, -hex_nut_hole_dims.y, 0])
+  )
+  x_distance = box_size/2 - hex_nut_hole_dims.x/2 - distance_to_wall
+  z_distance = box_height - hex_nut_hole_dims.z/2 - distance_to_wall
+
+  middle_section_box = difference(
+    middle_section_box,
+    screw_rail.rotateX(90).translate([x_distance, 0, z_distance]),
+    screw_rail.rotateX(90).translate([-x_distance, 0, z_distance]),
+    hex_nut_hole.translate([x_distance, distance_to_nut + 2*distance_to_wall + params.bearing_nut_height, z_distance]),
+    hex_nut_hole.translate([-x_distance, distance_to_nut + 2*distance_to_wall + params.bearing_nut_height, z_distance]),
+    hex_nut_hole.translate([x_distance, distance_to_nut - 2*distance_to_wall, z_distance]),
+    hex_nut_hole.translate([-x_distance, distance_to_nut - 2*distance_to_wall, z_distance]),
+  )
+
   trimming_box_1 = cube(
     {size:[box_size, cut_length, middle_section_height], center:[true, true, false]}
   ).translate(
