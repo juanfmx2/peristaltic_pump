@@ -7,7 +7,7 @@ _ = require 'underscore'
 util = require './util.coffee'
 
 class ScrewType
-  @known_screws_data = {}
+  @known_screws_data: {}
 
   @load_m_iso_data: ->
     new ScrewType('M1.6', 1.6,  3.2,  3.0, 1.6, 0.35, 0.20)
