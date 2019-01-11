@@ -4,7 +4,9 @@
   "description": "peristaltic pump 3D desing with open js cad",
   "main": "peristaltic_pump.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -t coffeeify --extension=\".coffee\" coffee/peristaltic_pump.coffee > dist/peristaltic_pump.js",
+    "build-screws": "browserify -t coffeeify --extension=\".coffee\" coffee/screws.coffee > dist/screws.js"
   },
   "keywords": [
     "persitaltic",
@@ -15,7 +17,8 @@
   "dependencies": {
     "@jscad/cli": "^1.8.4",
     "browserify": "^16.2.2",
-    "coffeescript": "^2.3.1"
+    "coffeescript": "^2.3.1",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "coffeeify": "^3.0.1"

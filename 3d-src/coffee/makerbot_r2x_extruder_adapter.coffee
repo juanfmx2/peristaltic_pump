@@ -33,18 +33,18 @@ class ExtruderAdaptor
       translate([-@NEMA_17_DATA.screws_delta/2, @NEMA_17_DATA.screws_delta/2, 0], m_screw),
       cylinder
         r: @NEMA_17_DATA.ring_radius + @tolerance
-        h: @NEMA_17_DATA.ring_height + @tolerance
+        h: @NEMA_17_DATA.ring_height + 3*@tolerance
         fn: @curve_approx
         center: [true, true, false]
       cylinder
-        r: @NEMA_17_DATA.shaft_radius + 2*@tolerance
+        r: @NEMA_17_DATA.shaft_radius + 3*@tolerance
         h: @max_height
         fn: @curve_approx
         center: [true, true, false]
     )
 
   __draw_base_cube: ()->
-    enclosure_cube_y = @NEMA_17_DATA.ring_radius + 1.5*@tolerance + @NEMA_17_DATA.width/2
+    enclosure_cube_y = @NEMA_17_DATA.ring_radius + 2*@tolerance + @NEMA_17_DATA.width/2
     trimming_cube = cube({size: [@NEMA_17_DATA.width,@NEMA_17_DATA.width, @round_radius], center: [true, true, false]})
     enc_cube = CSG.roundedCube
       corner1: [-@NEMA_17_DATA.width/2, @NEMA_17_DATA.width/2 - enclosure_cube_y, -@round_radius]
@@ -65,7 +65,7 @@ class ExtruderAdaptor
         rotate(
           [90, 0, 0],
           cylinder(
-            r: @hot_end_radius + 2*@tolerance
+            r: @hot_end_radius + 3*@tolerance
             h: @max_height
             fn: @curve_approx
             center: true
@@ -83,11 +83,12 @@ class ExtruderAdaptor
       translate(
         [0, 0, @missing_height - @tolerance],
         cylinder
-          r: @NEMA_17_DATA.ring_radius - @tolerance
+          r: @NEMA_17_DATA.ring_radius
           h: @NEMA_17_DATA.ring_height - 0.5*@tolerance + @tolerance
           fn: @curve_approx
           center: [true, true, false]
-      )
+      ),
+
     )
 
     return enc_cube
@@ -96,7 +97,19 @@ class ExtruderAdaptor
     objects = []
     motor_holes = @__draw_motor_holes()
     base_cube = @__draw_base_cube()
-    objects.push(difference(base_cube, motor_holes))
+    objects.push(
+      union(
+        difference(base_cube, motor_holes),
+        translate(
+          [0, 0, @NEMA_17_DATA.ring_height + 3*@tolerance],
+          cylinder
+            r: @NEMA_17_DATA.shaft_radius + 5*@tolerance
+            h: 2 * @tolerance
+            fn: @curve_approx
+            center: [true, true, false]
+        )
+      )
+    )
     if @direction != 'Right'
       mirrored_objects = []
       for obj_i in objects
@@ -129,11 +142,11 @@ global.getParameterDefinitions = ->
       values: ['Left', 'Right']
       initial: 'Right'
     }
-    {name: 'curve_approx', type: 'float', initial: 30, step: 10, caption: 'Curve Approximation'}
+    {name: 'curve_approx', type: 'float', initial: 10, step: 10, caption: 'Curve Approximation'}
     {name: 'hot_end_radius', type: 'float', initial: 3, step: 0.25, caption: 'Hot-end Radius'}
-    {name: 'hot_end_x_delta', type: 'float', initial: 5.5, step: 0.25, caption: 'Hot-end X Delta'}
+    {name: 'hot_end_x_delta', type: 'float', initial: 6, step: 0.25, caption: 'Hot-end X Delta'}
     {name: 'hot_end_z_delta', type: 'float', initial: 14.26, step: 0.25, caption: 'Hot-end Z Delta'}
-    {name: 'tolerance', type: 'float', initial: 0.2, step: 0.25, caption: 'Tolerance'}
+    {name: 'tolerance', type: 'float', initial: 0.15, step: 0.25, caption: 'Tolerance'}
   ]
 
 global.main = (params)->

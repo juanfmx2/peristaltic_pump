@@ -1,888 +1,126 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-// title      : parameters
-// author     : Juan F. Mosquera (juanfmx2@gmail.com)
-// license    : GNU GENERAL PUBLIC LICENSE v3
-// tags       : peristaltic pump, parameters
-// file       : parameters.coffee
-var get_yes_no_choice_parameter, screws;
-
-screws = require('./screws.coffee');
-
-get_yes_no_choice_parameter = function(param_name, caption) {
-  return {
-    name: param_name,
-    type: 'choice',
-    caption: caption,
-    values: ['No', 'Yes'],
-    initial: 'Yes'
-  };
-};
-
-exports.get_motor_parameters = function() {
-  return [
-    {
-      name: 'motor_mounting',
-      caption: 'Motor Mount',
-      type: 'group'
-    },
-    {
-      name: 'motor_shaft_radius',
-      type: 'float',
-      initial: 2.5,
-      step: 0.25,
-      caption: 'Shaft radius'
-    },
-    {
-      name: 'motor_shaft_height',
-      type: 'float',
-      initial: 24.0,
-      step: 0.5,
-      caption: 'Shaft height'
-    },
-    {
-      name: 'motor_ring_radius',
-      type: 'float',
-      initial: 11.0,
-      step: 0.1,
-      caption: 'Ring radius'
-    },
-    {
-      name: 'motor_ring_height',
-      type: 'float',
-      initial: 2.0,
-      step: 0.1,
-      caption: 'Ring height'
-    },
-    {
-      name: 'motor_mountingholes_offset',
-      type: 'float',
-      initial: 15.5,
-      step: 0.1,
-      caption: 'Holes Offset'
-    },
-    {
-      name: 'motor_mountingholes_radius',
-      type: 'float',
-      initial: 1.5,
-      step: 0.1,
-      caption: 'Holes Radius'
-    },
-    {
-      name: 'motor_mountingholes_depth',
-      type: 'float',
-      initial: 4.5,
-      step: 0.1,
-      caption: 'Holes Depth'
-    }
-  ];
-};
-
-exports.get_bearings_parameters = function() {
-  return [
-    {
-      name: 'bearings',
-      caption: 'Bearings',
-      type: 'group'
-    },
-    {
-      name: 'bearings_height',
-      type: 'float',
-      initial: 10,
-      step: 1,
-      caption: 'Height'
-    },
-    {
-      name: 'bearing_outer_radius',
-      type: 'float',
-      initial: 6.5,
-      step: 0.25,
-      caption: 'Outer Radius'
-    },
-    {
-      name: 'bearing_screw_type',
-      type: 'choice',
-      values: screws.available_screw_types,
-      initial: 'M3',
-      caption: 'Screw Type'
-    },
-    {
-      name: 'bearing_nut_height',
-      type: 'float',
-      initial: 1.8,
-      step: 0.05,
-      caption: 'Nut Height'
-    },
-    {
-      name: 'bearings_washers_height',
-      type: 'float',
-      initial: 0.9,
-      step: 0.05,
-      caption: 'Washers Height'
-    },
-    {
-      name: 'bearings_washers_radius',
-      type: 'float',
-      initial: 4.5,
-      step: 0.1,
-      caption: 'Washers Radius'
-    },
-    get_yes_no_choice_parameter('render_bearings',
-    'Render')
-  ];
-};
-
-exports.get_arms_parameters = function() {
-  return [
-    {
-      name: 'arms',
-      caption: 'Bearings Holder',
-      type: 'group'
-    },
-    {
-      name: 'arms_num',
-      type: 'float',
-      initial: 5,
-      step: 1,
-      caption: 'Number of Arms'
-    },
-    {
-      name: 'arm_height',
-      type: 'float',
-      initial: 3,
-      step: 0.25,
-      caption: 'Arm Height'
-    },
-    {
-      name: 'arm_radius',
-      type: 'float',
-      initial: 20,
-      step: 0.5,
-      caption: 'Arm Radius'
-    },
-    {
-      name: 'arms_shaft_radius',
-      type: 'float',
-      initial: 6,
-      step: 0.25,
-      caption: 'Shaft Radius'
-    },
-    {
-      name: 'arms_shaft_top_height',
-      type: 'float',
-      initial: 8,
-      step: 1,
-      caption: 'Shaft Top Height'
-    },
-    get_yes_no_choice_parameter('render_arms',
-    'Render')
-  ];
-};
-
-exports.get_enclosure_parameters = function() {
-  return [
-    {
-      name: 'enclosure',
-      caption: 'Enclosure',
-      type: 'group'
-    },
-    {
-      name: 'box_width',
-      type: 'float',
-      initial: 58,
-      step: 0.5,
-      caption: 'Box Width'
-    },
-    {
-      name: 'thumb_screw_diameter',
-      type: 'float',
-      initial: 8.5,
-      step: 0.5,
-      caption: 'Thumb Screw Diameter'
-    },
-    {
-      name: 'thumb_screw_length',
-      type: 'float',
-      initial: 9.5,
-      step: 0.5,
-      caption: 'Thumb Screw Length'
-    },
-    {
-      name: 'tubing_outer_radius',
-      type: 'float',
-      initial: 2.5,
-      step: 0.05,
-      caption: 'Tubing Outer Radius'
-    },
-    {
-      name: 'tubing_inner_radius',
-      type: 'float',
-      initial: 1.5,
-      step: 0.05,
-      caption: 'Tubing Inner Radius'
-    },
-    {
-      name: 'enclosure_screw_type',
-      type: 'choice',
-      values: screws.available_screw_types,
-      initial: 'M3',
-      caption: 'Screw Type'
-    },
-    get_yes_no_choice_parameter('render_enclosure',
-    'Render')
-  ];
-};
-
-exports.get_general_parameters = function() {
-  return [
-    {
-      name: 'general',
-      caption: 'General',
-      type: 'group'
-    },
-    {
-      name: 'clearance',
-      type: 'float',
-      initial: 0.3,
-      step: 0.025,
-      caption: 'Objects Clearance'
-    },
-    {
-      name: 'render_style',
-      type: 'choice',
-      caption: 'Render',
-      values: ['Assembled',
-    '3D Printer Ready'],
-      initial: 'Assembled'
-    }
-  ];
-};
-
-exports.get_all_parameters = function() {
-  return [].concat(exports.get_motor_parameters()).concat(exports.get_bearings_parameters()).concat(exports.get_arms_parameters()).concat(exports.get_enclosure_parameters()).concat(exports.get_general_parameters());
-};
-
-
-},{"./screws.coffee":3}],2:[function(require,module,exports){
 (function (global){
-// title      : Peristaltic Pump
+// title      : Makerbot Replicator 2X adapter
 // author     : Juan F. Mosquera (juanfmx2@gmail.com)
 // license    : GNU GENERAL PUBLIC LICENSE v3
-// tags       : peristaltic, pump
-// file       : peristaltic_pump.coffee
-var create_arms_shaft_tower, create_base_and_screws, create_bearings, create_enclosure, create_pump_arms, create_screw_hole, create_screw_holes_by_offset, create_screw_nut_holes_by_offset, get_arms_delta, get_pump_shapes, parameters, screws, util;
-
-parameters = require('./parameters.coffee');
-
-screws = require('./screws.coffee');
-
-util = require('./util.coffee');
-
-create_base_and_screws = function(params) {
-  var base_screw, base_screws_holes, base_w, motor_base, shaft;
-  base_screw = cylinder({
-    r: params.motor_mountingholes_radius,
-    h: params.motor_mountingholes_depth,
-    center: [true, true, false]
-  });
-  base_screws_holes = create_screw_holes_by_offset(base_screw, params.motor_mountingholes_offset);
-  base_w = 2 * (params.motor_mountingholes_offset + 2 * params.motor_mountingholes_radius);
-  motor_base = cube({
-    size: [base_w, base_w, params.motor_mountingholes_depth],
-    center: [true, true, false]
-  });
-  motor_base = union(motor_base, cylinder({
-    r: params.motor_ring_radius,
-    h: params.motor_ring_height + params.motor_mountingholes_depth,
-    center: [true, true, false]
-  }));
-  motor_base = difference(motor_base, cylinder({
-    r: params.motor_shaft_radius + 0.25,
-    h: params.motor_shaft_height + params.motor_mountingholes_depth,
-    center: [true, true, false]
-  }));
-  shaft = cylinder({
-    r: params.motor_shaft_radius,
-    h: params.motor_shaft_height + params.motor_mountingholes_depth,
-    center: [true, true, false]
-  });
-  motor_base = difference(motor_base, base_screws_holes);
-  motor_base = color('darkgrey', motor_base);
-  shaft = color('grey', shaft);
-  return union(motor_base, shaft);
-};
-
-get_arms_delta = function(params) {
-  return params.bearings_height + 2 * (params.bearings_washers_height + params.clearance);
-};
-
-create_arms_shaft_tower = function(params) {
-  var arms_delta, cur_screw, cur_y, hex_nut_hole, hex_nut_hole_dims, hex_nut_hole_wrapper, position_holder_nut_geom, shaft_closing_section_r, shaft_section_r, shaft_tower, shaft_tower_path, shaft_tower_silhouette, shaft_wide_section_r;
-  cur_screw = screws.get_screw_by_type(params.bearing_screw_type);
-  arms_delta = get_arms_delta(params);
-  shaft_section_r = params.arms_shaft_radius;
-  shaft_closing_section_r = params.motor_shaft_radius + 0.75;
-  shaft_wide_section_r = params.arms_shaft_radius + 1;
-  shaft_tower_path = new CSG.Path2D([[params.motor_shaft_radius + 0.1, 0], [shaft_wide_section_r, 0]], false);
-  cur_y = params.arm_height;
-  shaft_tower_path = shaft_tower_path.appendPoint([shaft_wide_section_r, cur_y]);
-  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_wide_section_r, cur_y], [shaft_section_r, cur_y], [shaft_section_r, cur_y + 1]]);
-  cur_y += arms_delta;
-  shaft_tower_path = shaft_tower_path.appendPoint([shaft_section_r, cur_y - 1]);
-  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_section_r, cur_y], [shaft_wide_section_r, cur_y], [shaft_wide_section_r, cur_y]]);
-  cur_y += params.arm_height;
-  shaft_tower_path = shaft_tower_path.appendPoint([shaft_wide_section_r, cur_y]);
-  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_wide_section_r, cur_y], [shaft_section_r, cur_y], [shaft_section_r, cur_y + 1]]);
-  cur_y += params.arms_shaft_top_height;
-  shaft_tower_path = shaft_tower_path.appendPoint([shaft_section_r, cur_y - 1]);
-  shaft_tower_path = shaft_tower_path.appendBezier([[shaft_section_r, cur_y], [shaft_closing_section_r, cur_y], [shaft_closing_section_r, cur_y]]);
-  shaft_tower_path = shaft_tower_path.appendPoint([params.motor_shaft_radius + 0.1, cur_y]);
-  shaft_tower_path = shaft_tower_path.close();
-  shaft_tower_silhouette = polygon(shaft_tower_path);
-  shaft_tower = rotate_extrude(shaft_tower_silhouette);
-  position_holder_nut_geom = function(geom_obj) {
-    geom_obj = rotate([0, 90, 0], geom_obj);
-    geom_obj = translate([params.motor_shaft_radius + 1, 0, 2 * params.arm_height + arms_delta + params.arms_shaft_top_height / 2], geom_obj);
-    return rotate([0, 0, 180 / params.arms_num], geom_obj);
-  };
-  // Use half a clearance here as there is more precision from the printer
-  hex_nut_hole = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance / 2);
-  hex_nut_hole_dims = util.get_object_dimensions(hex_nut_hole);
-  // Use the dimensions of the hexagon in y as it will be the spanner width
-  hex_nut_hole = union(hex_nut_hole, cube({
-    center: [true, true, false]
-  }).scale([hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z]).translate([-hex_nut_hole_dims.y / 2, 0, 0]));
-  hex_nut_hole = union(hex_nut_hole, cylinder({
-    r: cur_screw.radius,
-    h: 10,
-    center: true
-  }));
-  hex_nut_hole = position_holder_nut_geom(hex_nut_hole);
-  hex_nut_hole_wrapper = util.create_extruded_regular_polygon(cur_screw.nut_radius + 2, params.bearing_nut_height + 2 * (params.clearance + 0.8), 6);
-  hex_nut_hole_wrapper = position_holder_nut_geom(hex_nut_hole_wrapper);
-  shaft_tower = union(shaft_tower, hex_nut_hole_wrapper);
-  shaft_tower = difference(shaft_tower, hex_nut_hole, cylinder({
-    r: params.arm_radius,
-    h: 10,
-    center: [true, true, false]
-  }).translate([0, 0, 2 * params.arm_height + arms_delta + params.arms_shaft_top_height]));
-  return shaft_tower;
-};
-
-create_pump_arms = function(params) {
-  var angle, arm_tip, arm_tip_radius, arms_delta, arms_holder, arms_shaft, base_arm, base_bottom_arm, base_top_arm, cur_screw, hex_nut, i, j, joined_arms_bottom, joined_arms_top, middle_path, middle_path_angle, radius_to_bearings, ref, shaft_tower;
-  cur_screw = screws.get_screw_by_type(params.bearing_screw_type);
-  arm_tip_radius = (params.bearing_outer_radius + cur_screw.radius) / 2;
-  radius_to_bearings = params.arm_radius - params.bearing_outer_radius;
-  arms_delta = get_arms_delta(params);
-  arm_tip = translate([radius_to_bearings, 0, 0], circle({
-    r: arm_tip_radius,
-    center: true
-  }));
-  arms_shaft = circle({
-    r: params.arms_shaft_radius + 1,
-    center: true
-  });
-  middle_path = translate([radius_to_bearings / 2, cur_screw.radius, 0], circle({
-    r: (params.arms_shaft_radius + arm_tip_radius) * 1 / 2,
-    center: true
-  }));
-  middle_path_angle = Math.atan(cur_screw.radius / (radius_to_bearings / 2)) * 180 / Math.PI;
-  base_arm = linear_extrude({
-    height: params.arm_height
-  }, difference(chain_hull([arms_shaft, middle_path, arm_tip]), translate([radius_to_bearings, 0, 0], circle({
-    r: cur_screw.radius,
-    center: true
-  }))));
-  hex_nut = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance);
-  base_bottom_arm = difference(base_arm, translate([radius_to_bearings, 0, 0], cylinder({
-    r: cur_screw.head_radius + params.clearance,
-    h: params.bearing_nut_height,
-    fn: 90,
-    center: [true, true, false]
-  })));
-  base_top_arm = difference(base_arm, translate([radius_to_bearings, 0, params.arm_height - params.bearing_nut_height], rotate([0, 0, -middle_path_angle], hex_nut)));
-  base_top_arm = translate([0, 0, arms_delta + params.arm_height], base_top_arm);
-  angle = 360 / params.arms_num;
-  joined_arms_bottom = base_bottom_arm;
-  joined_arms_top = base_top_arm;
-  for (i = j = 0, ref = params.arms_num; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
-    joined_arms_bottom = union(joined_arms_bottom, rotate([0, 0, angle * i], base_bottom_arm));
-    joined_arms_top = union(joined_arms_top, rotate([0, 0, angle * i], base_top_arm));
-  }
-  shaft_tower = create_arms_shaft_tower(params);
-  arms_holder = union(shaft_tower, joined_arms_bottom, joined_arms_top);
-  arms_holder = color('green', arms_holder);
-  arms_holder = difference(arms_holder, cylinder({
-    r: params.motor_shaft_radius + 0.1,
-    h: 50,
-    center: [true, true, false]
-  }));
-  return arms_holder;
-};
-
-create_bearings = function(params) {
-  var all_bearings, angle, arms_delta, assembled, bearing_base, bearing_base_cyl, cur_screw, i, j, radius_to_bearings, ref, washers_cyl;
-  cur_screw = screws.get_screw_by_type(params.bearing_screw_type);
-  arms_delta = get_arms_delta(params);
-  radius_to_bearings = params.arm_radius - params.bearing_outer_radius;
-  assembled = params.render_style === 'Assembled';
-  washers_cyl = color('white', cylinder({
-    r: params.bearings_washers_radius,
-    h: params.bearings_washers_height,
-    center: [true, true, false]
-  }));
-  bearing_base_cyl = translate([0, 0, params.bearings_washers_height], color('gray', cylinder({
-    r: params.bearing_outer_radius,
-    h: params.bearings_height,
-    fn: 90,
-    center: [true, true, false]
-  })));
-  if (assembled) {
-    bearing_base_cyl = union(washers_cyl, bearing_base_cyl, translate([0, 0, params.bearings_washers_height + params.bearings_height], washers_cyl));
-  }
-  bearing_base = difference(bearing_base_cyl, cylinder({
-    r: cur_screw.radius,
-    h: arms_delta,
-    center: [true, true, false]
-  }));
-  bearing_base = translate([radius_to_bearings, 0, 0], bearing_base);
-  all_bearings = bearing_base;
-  angle = 360 / params.arms_num;
-  for (i = j = 0, ref = params.arms_num; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
-    all_bearings = union(all_bearings, rotate([0, 0, angle * i], bearing_base));
-  }
-  return all_bearings;
-};
-
-create_screw_hole = function(params, head_radius, thread_radius, head_height, thread_height, z_inverted = false) {
-  return union(cylinder({
-    r: head_radius + 2 * params.clearance,
-    h: head_height,
-    fn: 90,
-    center: [true, true, false]
-  }).translate([0, 0, z_inverted ? 0 : thread_height]), cylinder({
-    r: thread_radius,
-    h: thread_height,
-    fn: 90,
-    center: [true, true, false]
-  }).translate([0, 0, z_inverted ? thread_height : 0]));
-};
-
-create_screw_nut_holes_by_offset = function(screw_type, thread_height, offset, z_inverted = false) {
-  var hex_nut_hole, hex_nut_hole_dims;
-  hex_nut_hole = screw_type.draw_nut_hole(params.bearing_nut_height, params.clearance);
-  hex_nut_hole_dims = util.get_object_dimensions(hex_nut_hole);
-  // Use the dimensions of the hexagon in y as it will be the spanner width
-  hex_nut_hole = union(hex_nut_hole, cube({
-    center: [true, true, false]
-  }).scale([3 * hex_nut_hole_dims.y, hex_nut_hole_dims.y, hex_nut_hole_dims.z]).translate([-3 * hex_nut_hole_dims.y / 2, 0, 0])).translate([0, 0, z_inverted ? 0 : thread_height]);
-  hex_nut_hole = union(hex_nut_hole, cylinder({
-    r: screw_type.radius,
-    h: thread_height,
-    center: [true, true, false]
-  }).translate([0, 0, z_inverted ? hex_nut_hole_dims.z : 0]));
-  return union(translate([offset, offset, 0], hex_nut_hole.rotateZ(180)), translate([offset, -offset, 0], hex_nut_hole.rotateZ(180)), translate([-offset, offset, 0], hex_nut_hole), translate([-offset, -offset, 0], hex_nut_hole));
-};
-
-create_screw_holes_by_offset = function(base_screw_hole, offset) {
-  return union(translate([offset, offset, 0], base_screw_hole), translate([offset, -offset, 0], base_screw_hole), translate([-offset, offset, 0], base_screw_hole), translate([-offset, -offset, 0], base_screw_hole));
-};
-
-create_enclosure = function(params) {
-  var arms_delta, assembled, base_box, base_screw_hole, base_screw_hole_2_middle_section, base_screws_holes, base_screws_holes_2_middle_section, bottom_hole_height, bottom_inner_hole, bottom_part, box_height, box_size, compressed_tube_width, cur_screw, cut_length, cut_sphere, cut_sphere_radius, distance_to_nut, distance_to_wall, enclosure_parts, hex_nut_hole, hex_nut_hole_dims, inner_hole, length_to_nut, lid_delete_geom, lid_layer_height, middle_and_lid_delete_geom, middle_section_box, middle_section_box_1, middle_section_box_2, middle_section_height, mounting_motor_hole, outer_screws_offset, rim_radius, screw_rail, translate_delta, trimming_box_1, trimming_box_2, tubing_hole, tubing_position_x, x_distance, z_distance;
-  enclosure_parts = [];
-  arms_delta = get_arms_delta(params);
-  assembled = params.render_style === 'Assembled';
-  cur_screw = screws.get_screw_by_type(params.enclosure_screw_type);
-  compressed_tube_width = 2 * (params.tubing_outer_radius - params.tubing_inner_radius) - 2 * params.clearance;
-  box_size = params.box_width;
-  lid_layer_height = 6;
-  middle_section_height = 2 * (params.arm_height + params.clearance) + arms_delta + params.arms_shaft_top_height;
-  box_height = middle_section_height + lid_layer_height;
-  outer_screws_offset = box_size / 2 - cur_screw.head_radius - 2;
-  base_box = CSG.roundedCube({
-    radius: [box_size / 2, box_size / 2, box_height / 2],
-    center: [0, 0, box_height / 2],
-    roundradius: 3,
-    resolution: 20
-  });
-  cut_sphere_radius = box_size / 2 - cur_screw.head_diameter * 2.3;
-  cut_sphere = sphere({
-    r: cut_sphere_radius,
-    fn: 30,
-    type: 'geodesic'
-  });
-  translate_delta = box_size / 2;
-  base_box = difference(base_box, cut_sphere.translate([translate_delta, 0]), cut_sphere.translate([-translate_delta, 0]), cut_sphere.translate([0, translate_delta]), cut_sphere.translate([0, -translate_delta]));
-  middle_and_lid_delete_geom = cube({
-    size: [box_size, box_size, box_height - lid_layer_height],
-    center: [true, true, false]
-  });
-  lid_delete_geom = cube({
-    size: [box_size, box_size, lid_layer_height],
-    center: [true, true, false]
-  });
-  base_screw_hole = create_screw_hole(params, cur_screw.head_radius, cur_screw.radius, lid_layer_height / 2, lid_layer_height / 2);
-  base_screws_holes = create_screw_holes_by_offset(base_screw_hole, params.motor_mountingholes_offset);
-  base_screw_hole_2_middle_section = create_screw_hole(params, params.thumb_screw_diameter / 2, cur_screw.radius, lid_layer_height / 2, lid_layer_height / 2, true);
-  base_screws_holes_2_middle_section = create_screw_holes_by_offset(base_screw_hole_2_middle_section, outer_screws_offset);
-  mounting_motor_hole = cylinder({
-    r: params.motor_ring_radius + 2 * params.clearance,
-    h: lid_layer_height,
-    center: [true, true, false],
-    fn: 90
-  });
-  bottom_part = difference(base_box, mounting_motor_hole, base_screws_holes, base_screws_holes_2_middle_section, middle_and_lid_delete_geom.translate([0, 0, lid_layer_height]));
-  bottom_part = color('blue', bottom_part);
-  if (!assembled) {
-    bottom_part = bottom_part.rotateX(180).translate([0, 0, lid_layer_height]);
-  }
-  enclosure_parts.push(bottom_part);
-  bottom_hole_height = params.arms_shaft_top_height - (cur_screw.head_height + params.clearance);
-  inner_hole = cylinder({
-    r: params.arm_radius + compressed_tube_width,
-    h: box_height - lid_layer_height - bottom_hole_height,
-    center: [true, true, false],
-    fn: 90
-  }).translate([0, 0, lid_layer_height + bottom_hole_height]);
-  bottom_inner_hole = cylinder({
-    r: params.motor_ring_radius + 2 * params.clearance,
-    h: bottom_hole_height,
-    center: [true, true, false],
-    fn: 90
-  }).translate([0, 0, lid_layer_height]);
-  tubing_hole = cylinder({
-    r: params.tubing_outer_radius + params.clearance,
-    h: box_size / 2,
-    center: [true, true, false],
-    fn: 90
-  }).rotateX(90).translate([0, box_size / 2, box_height - params.arm_height - arms_delta / 2]);
-  tubing_position_x = params.arm_radius + compressed_tube_width - (params.tubing_outer_radius + params.clearance);
-  length_to_nut = params.thumb_screw_length - lid_layer_height / 2 - params.bearing_nut_height;
-  middle_section_box = difference(base_box, inner_hole, bottom_inner_hole, lid_delete_geom, tubing_hole.translate([tubing_position_x, 0, 0]), tubing_hole.translate([-tubing_position_x, 0, 0]), create_screw_nut_holes_by_offset(cur_screw, length_to_nut, outer_screws_offset).translate([0, 0, lid_layer_height]));
-  rim_radius = 1.5 * params.arm_height / 2;
-  middle_section_box = union(middle_section_box, torus({
-    ri: rim_radius,
-    ro: params.arm_radius + compressed_tube_width,
-    fni: 4,
-    fno: 100
-  }).translate([0, 0, box_height - params.arm_height / 2]), torus({
-    ri: rim_radius,
-    ro: params.arm_radius + compressed_tube_width,
-    fni: 4,
-    fno: 100
-  }).translate([0, 0, box_height - (3 * params.arm_height / 2 + arms_delta)]));
-  // Top screw rails
-  cut_length = 2 * box_size / 3 + params.clearance;
-  screw_rail = cylinder({
-    r: cur_screw.radius,
-    h: box_size,
-    center: true,
-    fn: 90
-  });
-  distance_to_wall = 1.5;
-  distance_to_nut = cut_length - box_size / 2;
-  hex_nut_hole = cur_screw.draw_nut_hole(params.bearing_nut_height, params.clearance).rotateZ(90).rotateX(90);
-  hex_nut_hole_dims = util.get_object_dimensions(hex_nut_hole);
-  hex_nut_hole = union(hex_nut_hole, cube({
-    size: [hex_nut_hole_dims.x, hex_nut_hole_dims.y, hex_nut_hole_dims.z],
-    center: [true, false, false]
-  }).translate([0, -hex_nut_hole_dims.y, 0]));
-  x_distance = box_size / 2 - hex_nut_hole_dims.x / 2 - distance_to_wall;
-  z_distance = box_height - hex_nut_hole_dims.z / 2 - distance_to_wall;
-  middle_section_box = difference(middle_section_box, screw_rail.rotateX(90).translate([x_distance, 0, z_distance]), screw_rail.rotateX(90).translate([-x_distance, 0, z_distance]), hex_nut_hole.translate([x_distance, distance_to_nut + 2 * distance_to_wall + params.bearing_nut_height, z_distance]), hex_nut_hole.translate([-x_distance, distance_to_nut + 2 * distance_to_wall + params.bearing_nut_height, z_distance]), hex_nut_hole.translate([x_distance, distance_to_nut - 2 * distance_to_wall, z_distance]), hex_nut_hole.translate([-x_distance, distance_to_nut - 2 * distance_to_wall, z_distance]));
-  trimming_box_1 = cube({
-    size: [box_size, cut_length, middle_section_height],
-    center: [true, true, false]
-  }).translate([0, -(box_size - cut_length) / 2, lid_layer_height]);
-  middle_section_box_1 = difference(middle_section_box, trimming_box_1);
-  middle_section_box_1 = color('yellow', middle_section_box_1);
-  if (!assembled) {
-    middle_section_box_1 = middle_section_box_1.translate([0, box_size + 5 * params.clearance, -lid_layer_height]);
-  }
-  enclosure_parts.push(middle_section_box_1);
-  cut_length = box_size - cut_length + 2 * params.clearance;
-  trimming_box_2 = cube({
-    size: [box_size, cut_length, middle_section_height],
-    center: [true, true, false]
-  }).translate([0, (box_size - cut_length) / 2, lid_layer_height]);
-  middle_section_box_2 = difference(middle_section_box, trimming_box_2);
-  middle_section_box_2 = middle_section_box_2.setColor([0.7, 0.7, 0, 0.5]);
-  if (!assembled) {
-    middle_section_box_2 = middle_section_box_2.translate([0, box_size + 5 * params.clearance, -lid_layer_height]);
-  }
-  enclosure_parts.push(middle_section_box_2);
-  return union(enclosure_parts);
-};
-
-get_pump_shapes = function(params) {
-  var a_b_intersection, arms_dims, arms_holder, arms_z_pos, assembled, bearings, enclosure, intersections_dims, shapes_to_draw;
-  assembled = params.render_style === 'Assembled';
-  shapes_to_draw = [];
-  arms_holder = null;
-  if (params.render_arms === 'Yes') {
-    arms_holder = create_pump_arms(params);
-    shapes_to_draw.push(arms_holder);
-  }
-  bearings = null;
-  if (params.render_bearings === 'Yes') {
-    bearings = create_bearings(params);
-    shapes_to_draw.push(bearings);
-  }
-  if (params.render_arms === 'Yes' && params.render_bearings === 'Yes') {
-    a_b_intersection = intersection(arms_holder, bearings.translate([0, 0, params.arm_height + params.clearance]));
-    intersections_dims = util.get_object_dimensions(a_b_intersection);
-    if (intersections_dims.x !== 0 || intersections_dims.y !== 0 || intersections_dims.z !== 0) {
-      alert('Bearings and Arms are intersecting!');
-      console.error('Bearings and Arms are intersecting!');
-    }
-  }
-  enclosure = null;
-  if (params.render_enclosure === 'Yes') {
-    enclosure = create_enclosure(params);
-    shapes_to_draw.push(enclosure);
-  }
-  if (assembled) {
-    arms_z_pos = params.motor_mountingholes_depth + 6;
-    shapes_to_draw = [];
-    if (arms_holder != null) {
-      arms_dims = util.get_object_dimensions(arms_holder);
-      arms_holder = arms_holder.rotateX(180).translate([0, 0, arms_dims.z]);
-      shapes_to_draw.push(arms_holder.translate([0, 0, arms_z_pos]));
-    }
-    if (bearings != null) {
-      shapes_to_draw.push(bearings.translate([0, 0, arms_z_pos + params.arms_shaft_top_height + params.arm_height + params.clearance]));
-    }
-    if (enclosure != null) {
-      shapes_to_draw.push(enclosure.translate([0, 0, params.motor_mountingholes_depth + params.clearance]));
-    }
-    shapes_to_draw.push(create_base_and_screws(params));
-  }
-  return shapes_to_draw;
-};
-
-// ----------------------------------------------------------------------------------------------------------------------
-// OpenJSCAD functions
-// ----------------------------------------------------------------------------------------------------------------------
-global.getParameterDefinitions = function() {
-  return parameters.get_all_parameters();
-};
-
-global.main = function(params) {
-  return get_pump_shapes(params);
-};
-
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./parameters.coffee":1,"./screws.coffee":3,"./util.coffee":4}],3:[function(require,module,exports){
-(function (global){
-// title      : screws
-// author     : Juan F. Mosquera (juanfmx2@gmail.com)
-// license    : GNU GENERAL PUBLIC LICENSE v3
-// tags       : screws
-// file       : screws.coffee
-var ScrewType, _, util;
+// tags       : makerbot replicator 2x extruder adapter
+// file       : makerbot_r2x_extruder_adapter.coffee
+var ExtruderAdaptor, _, util;
 
 _ = require('underscore');
 
 util = require('./util.coffee');
 
-ScrewType = (function() {
-  class ScrewType {
-    static load_m_iso_data() {
-      new ScrewType('M1.6', 1.6, 3.2, 3.0, 1.6, 0.35, 0.20);
-      new ScrewType('M2', 2.0, 4.0, 3.8, 2.0, 0.40, 0.25);
-      new ScrewType('M2.5', 2.5, 5.0, 4.5, 2.5, 0.45, 0.35);
-      new ScrewType('M3', 3.0, 5.5, 5.5, 3.0, 0.50, 0.35);
-      new ScrewType('M4', 4.0, 7.0, 7.0, 4.0, 0.70, 0.50);
-      new ScrewType('M5', 5.0, 8.0, 8.5, 5.0, 0.80, 0.50);
-      return new ScrewType('M6', 6.0, 10.0, 10.0, 6.0, 1.00, 0.75);
+ExtruderAdaptor = (function() {
+  class ExtruderAdaptor {
+    constructor(max_height, extruder_length, extruder_height, missing_height, printer_ready, direction, curve_approx, hot_end_radius, hot_end_x_delta, hot_end_z_delta, tolerance) {
+      this.max_height = max_height;
+      this.extruder_length = extruder_length;
+      this.extruder_height = extruder_height;
+      this.missing_height = missing_height;
+      this.printer_ready = printer_ready;
+      this.direction = direction;
+      this.curve_approx = curve_approx;
+      this.hot_end_radius = hot_end_radius;
+      this.hot_end_x_delta = hot_end_x_delta;
+      this.hot_end_z_delta = hot_end_z_delta;
+      this.tolerance = tolerance;
+      this.round_radius = 3;
+      this.distance_to_lid = this.missing_height + this.extruder_height + this.tolerance;
     }
 
-    // Screw data and geometry based on https://en.wikipedia.org/wiki/ISO_metric_screw_thread
-    constructor(name, diameter, spanner_size, head_diameter, head_height, coarse_pitch, fine_pitch) {
-      var sqrt_3;
-      this.name = name;
-      this.diameter = diameter;
-      this.spanner_size = spanner_size;
-      this.head_diameter = head_diameter;
-      this.head_height = head_height;
-      sqrt_3 = Math.pow(3.0, 0.5);
-      this.nut_diameter = 2.0 * this.spanner_size / sqrt_3;
-      this.nut_radius = this.nut_diameter / 2;
-      this.radius = this.diameter / 2;
-      this.head_radius = this.head_diameter / 2;
-      this.thread_data = {
-        coarse: {
-          pitch: coarse_pitch,
-          h: coarse_pitch * sqrt_3 / 2.0
-        },
-        fine: {
-          pitch: fine_pitch,
-          h: fine_pitch * sqrt_3 / 2.0
-        }
-      };
-      ScrewType.known_screws_data[this.name] = this;
-    }
-
-    __draw_coil_loop(fine = true) {
-      var coil, inner_radius, max_radius, num_slices, offset_angle, offset_start, slices_x_dist, slicing_angle, thread_head, threading, trimming_cyl;
-      threading = fine ? this.thread_data.fine : this.thread_data.coarse;
-      max_radius = this.diameter / 2.0;
-      inner_radius = max_radius - threading.h * 5 / 8;
-      thread_head = CSG.Polygon.createFromPoints([[threading.pitch / 2, inner_radius - threading.h / 8], [threading.pitch / 8, max_radius], [-threading.pitch / 8, max_radius], [-threading.pitch / 2, inner_radius - threading.h / 8]]);
-      slicing_angle = 10.0;
-      offset_angle = 180;
-      offset_start = Math.ceil(offset_angle / slicing_angle);
-      num_slices = offset_start + Math.ceil((360 + offset_angle) / slicing_angle);
-      slices_x_dist = threading.pitch * slicing_angle / 360;
-      coil = thread_head.solidFromSlices({
-        numslices: num_slices,
-        callback: function(t, slice) {
-          var cur_slice;
-          cur_slice = slice - offset_start;
-          return this.translate([cur_slice * slices_x_dist, 0, 0]).rotateX(slicing_angle * cur_slice);
-        }
-      });
-      trimming_cyl = cylinder({
-        r: max_radius + 0.1,
-        h: threading.pitch,
-        center: true
-      }).rotateY(90);
-      coil = difference(coil, trimming_cyl.translate([-threading.pitch / 2, 0, 0]));
-      coil = difference(coil, trimming_cyl.translate([3 * threading.pitch / 2, 0, 0]));
-      return coil;
-    }
-
-    __get_coil_loop(fine = true) {
-      var thread_path;
-      thread_path = fine ? 'fine' : 'coarse';
-      if (!_.has(this.thread_data[thread_path], '__coil_geom')) {
-        this.thread_data[thread_path]['__coil_geom'] = this.__draw_coil_loop(fine);
-      }
-      return this.thread_data[thread_path]['__coil_geom'];
-    }
-
-    __draw_screw_threading(screw_length, fine = true, use_non_intersecting_union = true) {
-      var coil_loop, coil_loop_i, i, inner_cylinder, inner_radius, j, max_radius, num_coil_loops, ref, screw, threading, trimming_cyl;
-      threading = fine ? this.thread_data.fine : this.thread_data.coarse;
-      max_radius = this.diameter / 2.0;
-      inner_radius = max_radius - threading.h * 5 / 8;
-      inner_cylinder = cylinder({
-        r: inner_radius,
-        h: screw_length + threading.pitch,
+    __draw_motor_holes() {
+      var m_screw;
+      m_screw = cylinder({
+        r: this.NEMA_17_DATA.screw_radius + this.tolerance,
+        h: this.max_height,
+        fn: this.curve_approx,
         center: [true, true, false]
-      }).rotateY(90);
-      num_coil_loops = Math.ceil(screw_length / threading.pitch);
-      coil_loop = this.__get_coil_loop(fine);
-      screw = coil_loop;
-      for (i = j = 1, ref = num_coil_loops; (1 <= ref ? j <= ref : j >= ref); i = 1 <= ref ? ++j : --j) {
-        coil_loop_i = coil_loop.translate([i * threading.pitch, 0, 0]);
-        if (i === num_coil_loops) {
-          trimming_cyl = cylinder({
-            r: max_radius + 0.1,
-            h: threading.pitch,
-            center: [true, true, false]
-          }).rotateY(90);
-          coil_loop_i = difference(coil_loop_i, trimming_cyl.translate([screw_length + threading.pitch, 0, 0]));
-        }
-        if (use_non_intersecting_union) {
-          screw = screw.unionForNonIntersecting(coil_loop_i);
-        } else {
-          screw = screw.union(coil_loop_i);
-        }
-      }
-      if (use_non_intersecting_union) {
-        screw = screw.unionForNonIntersecting(inner_cylinder);
-      } else {
-        screw = screw.union(inner_cylinder);
-      }
-      return screw.translate([0, 0, 0]).rotateY(-90);
-    }
-
-    draw_screw(params) {
-      var head, screw;
-      if (!_.isObject(params)) {
-        params = {};
-      }
-      params = _.defaults(params, {
-        screw_length: 10,
-        grub_screw: false,
-        placeholder: false,
-        fine: true,
-        hex_head: false
       });
-      screw = null;
-      if (params.placeholder) {
-        screw = cylinder({
-          r: this.diameter / 2.0,
-          h: params.screw_length,
-          center: [true, true, false]
-        });
-      } else {
-        screw = this.__draw_screw_threading(params.screw_length, params.fine);
-      }
-      if (!params.grub_screw) {
-        head = null;
-        if (params.hex_head) {
-          head = util.create_extruded_regular_polygon(this.nut_diameter / 2, this.head_height, 6);
-        } else {
-          head = cylinder({
-            r: this.head_diameter / 2.0,
-            h: this.head_height,
-            center: [true, true, false]
-          });
-        }
-        screw = screw.unionForNonIntersecting(head.translate([0, 0, params.screw_length]));
-      }
-      screw = screw.center().rotateX(180).translate([0, 0, (params.screw_length + this.head_height) / 2]);
-      return screw;
+      return union(translate([this.NEMA_17_DATA.screws_delta / 2, this.NEMA_17_DATA.screws_delta / 2, 0], m_screw), translate([-this.NEMA_17_DATA.screws_delta / 2, this.NEMA_17_DATA.screws_delta / 2, 0], m_screw), cylinder({
+        r: this.NEMA_17_DATA.ring_radius + this.tolerance,
+        h: this.NEMA_17_DATA.ring_height + 3 * this.tolerance,
+        fn: this.curve_approx,
+        center: [true, true, false]
+      }), cylinder({
+        r: this.NEMA_17_DATA.shaft_radius + 3 * this.tolerance,
+        h: this.max_height,
+        fn: this.curve_approx,
+        center: [true, true, false]
+      }));
     }
 
-    draw_nut_hole(height, clearance = 0) {
-      var hole_radius;
-      hole_radius = (this.spanner_size + 1.5 * clearance) / Math.pow(3.0, 0.5);
-      return util.create_extruded_regular_polygon(hole_radius, height + 2 * clearance, 6);
-    }
-
-    draw_nut(params) {
-      var nut, screw_coil;
-      if (!_.isObject(params)) {
-        params = {};
-      }
-      params = _.defaults(params, {
-        placeholder: false,
-        fine: true,
-        height: this.head_height
+    __draw_base_cube() {
+      var enc_cube, enclosure_cube_y, trimming_cube;
+      enclosure_cube_y = this.NEMA_17_DATA.ring_radius + 2 * this.tolerance + this.NEMA_17_DATA.width / 2;
+      trimming_cube = cube({
+        size: [this.NEMA_17_DATA.width, this.NEMA_17_DATA.width, this.round_radius],
+        center: [true, true, false]
       });
-      nut = util.create_extruded_regular_polygon(this.nut_radius, this.head_height, 6);
-      if (params.placeholder) {
-        return nut;
-      } else {
-        screw_coil = this.__draw_screw_threading(params.height, params.fine, false).scale([1.01, 1.01, 1]);
-        nut = difference(nut, screw_coil);
+      enc_cube = CSG.roundedCube({
+        corner1: [-this.NEMA_17_DATA.width / 2, this.NEMA_17_DATA.width / 2 - enclosure_cube_y, -this.round_radius],
+        corner2: [this.NEMA_17_DATA.width / 2, this.NEMA_17_DATA.width / 2, this.max_height + this.round_radius],
+        roundradius: this.round_radius,
+        resolution: this.curve_approx
+      });
+      enc_cube = difference(enc_cube, translate([0, 0, this.max_height], trimming_cube), translate([0, 0, -this.round_radius], trimming_cube), CSG.cube({
+        corner1: [-this.NEMA_17_DATA.width / 2, this.NEMA_17_DATA.width / 2 - (this.extruder_length + this.tolerance), this.missing_height - this.tolerance],
+        corner2: [this.NEMA_17_DATA.width / 2, this.NEMA_17_DATA.width / 2, this.distance_to_lid]
+      }), translate([-this.hot_end_x_delta, -this.max_height / 2, this.hot_end_z_delta], rotate([90, 0, 0], cylinder({
+        r: this.hot_end_radius + 3 * this.tolerance,
+        h: this.max_height,
+        fn: this.curve_approx,
+        center: true
+      // Temporarily remove the top part
+      }))), translate([0, 0, this.hot_end_z_delta], cube({
+        size: [this.NEMA_17_DATA.width, this.NEMA_17_DATA.width, this.max_height],
+        center: [true, true, false]
+      })));
+      enc_cube = union(enc_cube, translate([0, 0, this.missing_height - this.tolerance], cylinder({
+        r: this.NEMA_17_DATA.ring_radius,
+        h: this.NEMA_17_DATA.ring_height - 0.5 * this.tolerance + this.tolerance,
+        fn: this.curve_approx,
+        center: [true, true, false]
+      })));
+      return enc_cube;
+    }
+
+    draw() {
+      var base_cube, i, len, mirrored_objects, motor_holes, obj_i, objects;
+      objects = [];
+      motor_holes = this.__draw_motor_holes();
+      base_cube = this.__draw_base_cube();
+      objects.push(union(difference(base_cube, motor_holes), translate([0, 0, this.NEMA_17_DATA.ring_height + 3 * this.tolerance], cylinder({
+        r: this.NEMA_17_DATA.shaft_radius + 5 * this.tolerance,
+        h: 2 * this.tolerance,
+        fn: this.curve_approx,
+        center: [true, true, false]
+      }))));
+      if (this.direction !== 'Right') {
+        mirrored_objects = [];
+        for (i = 0, len = objects.length; i < len; i++) {
+          obj_i = objects[i];
+          mirrored_objects.push(obj_i.mirroredY());
+        }
+        return mirrored_objects;
       }
-      return nut;
+      return objects;
     }
 
   };
 
-  ScrewType.known_screws_data = {};
+  ExtruderAdaptor.prototype.NEMA_17_DATA = {
+    width: 42.3,
+    screws_delta: 31,
+    screw_radius: 1.5,
+    ring_radius: 11,
+    ring_height: 2,
+    shaft_radius: 2.5
+  };
 
-  return ScrewType;
+  return ExtruderAdaptor;
 
 }).call(this);
-
-ScrewType.load_m_iso_data();
-
-exports.available_screw_types = _.keys(ScrewType.known_screws_data);
-
-exports.get_screw_by_type = function(screw_type) {
-  if (_.has(ScrewType.known_screws_data, screw_type)) {
-    return ScrewType.known_screws_data[screw_type];
-  }
-  return null;
-};
 
 // ----------------------------------------------------------------------------------------------------------------------
 // OpenJSCAD functions for default rendering
@@ -890,77 +128,96 @@ exports.get_screw_by_type = function(screw_type) {
 global.getParameterDefinitions = function() {
   return [
     {
-      name: 'draw_placeholders',
-      type: 'choice',
-      caption: 'Draw Placeholders',
-      values: ['No',
-    'Yes'],
-      initial: 'Yes'
+      name: 'max_height',
+      type: 'float',
+      initial: 22.16,
+      step: 0.25,
+      caption: 'Max Length'
     },
     {
-      name: 'screw_set_to_draw',
+      name: 'extruder_length',
+      type: 'float',
+      initial: 30,
+      step: 0.25,
+      caption: 'Extruder Length'
+    },
+    {
+      name: 'extruder_height',
+      type: 'float',
+      initial: 15,
+      step: 0.25,
+      caption: 'Extruder Height'
+    },
+    {
+      name: 'gap_length',
+      type: 'float',
+      initial: 4.335,
+      step: 0.25,
+      caption: 'Gap Length'
+    },
+    {
+      name: 'printer_ready',
       type: 'choice',
-      caption: 'Screw Set to Draw',
-      values: ['ALL'].concat(_.keys(ScrewType.known_screws_data)),
-      initial: 'M3'
+      caption: 'Printer Ready?',
+      values: ['No',
+    'Yes'],
+      initial: 'No'
+    },
+    {
+      name: 'direction',
+      type: 'choice',
+      caption: 'Extruder Direction',
+      values: ['Left',
+    'Right'],
+      initial: 'Right'
+    },
+    {
+      name: 'curve_approx',
+      type: 'float',
+      initial: 10,
+      step: 10,
+      caption: 'Curve Approximation'
+    },
+    {
+      name: 'hot_end_radius',
+      type: 'float',
+      initial: 3,
+      step: 0.25,
+      caption: 'Hot-end Radius'
+    },
+    {
+      name: 'hot_end_x_delta',
+      type: 'float',
+      initial: 6,
+      step: 0.25,
+      caption: 'Hot-end X Delta'
+    },
+    {
+      name: 'hot_end_z_delta',
+      type: 'float',
+      initial: 14.26,
+      step: 0.25,
+      caption: 'Hot-end Z Delta'
+    },
+    {
+      name: 'tolerance',
+      type: 'float',
+      initial: 0.15,
+      step: 0.25,
+      caption: 'Tolerance'
     }
   ];
 };
 
 global.main = function(params) {
-  var all_screws, cur_y, draw_screw_set, j, len, s_t_key_i, screw_i, screw_types_keys, t0, t1;
-  t0 = performance.now();
-  screw_types_keys = _.keys(ScrewType.known_screws_data);
-  all_screws = [];
-  params.draw_placeholders = params.draw_placeholders === 'Yes';
-  draw_screw_set = function(screw, y_location, draw_placeholders) {
-    var separation;
-    console.debug('Starting ' + screw.name);
-    separation = screw.nut_diameter + 2;
-    all_screws.push(screw.draw_screw({
-      screw_length: 2 * screw.diameter
-    }).translate([0, y_location, 0]));
-    all_screws.push(screw.draw_screw({
-      screw_length: 2 * screw.diameter,
-      fine: false,
-      hex_head: true
-    }).translate([separation, y_location, 0]));
-    // Nuts
-    all_screws.push(screw.draw_nut().translate([-separation, y_location, 0]));
-    all_screws.push(screw.draw_nut({
-      fine: false
-    }).translate([-2 * separation, y_location, 0]));
-    // Placeholders
-    if (draw_placeholders) {
-      all_screws.push(screw.draw_screw({
-        screw_length: 2 * screw.diameter,
-        placeholder: true
-      }).translate([2 * separation, y_location, 0]));
-      all_screws.push(screw.draw_nut({
-        placeholder: true
-      }).translate([-3 * separation, y_location, 0]));
-    }
-    return console.debug('Finished! ' + s_t_key_i);
-  };
-  if (params.screw_set_to_draw === 'ALL') {
-    cur_y = 0;
-    for (j = 0, len = screw_types_keys.length; j < len; j++) {
-      s_t_key_i = screw_types_keys[j];
-      screw_i = ScrewType.known_screws_data[s_t_key_i];
-      draw_screw_set(screw_i, cur_y, params.draw_placeholders);
-      cur_y += screw_i.nut_diameter + 2;
-    }
-  } else {
-    draw_screw_set(ScrewType.known_screws_data[params.screw_set_to_draw], 0, params.draw_placeholders);
-  }
-  t1 = performance.now();
-  console.debug('Time: ' + (t1 - t0) / 1000);
-  return all_screws;
+  var ext_adaptor;
+  ext_adaptor = new ExtruderAdaptor(params.max_height, params.extruder_length, params.extruder_height, params.gap_length, params.printer_ready === 'Yes', params.direction, params.curve_approx, params.hot_end_radius, params.hot_end_x_delta, params.hot_end_z_delta, params.tolerance);
+  return ext_adaptor.draw();
 };
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./util.coffee":4,"underscore":5}],4:[function(require,module,exports){
+},{"./util.coffee":2,"underscore":3}],2:[function(require,module,exports){
 // title      : util
 // author     : Juan F. Mosquera (juanfmx2@gmail.com)
 // license    : GNU GENERAL PUBLIC LICENSE v3
@@ -1066,7 +323,7 @@ exports.scale_to = function(geom_obj, desired_x, desired_y, desired_z) {
 };
 
 
-},{"underscore":5}],5:[function(require,module,exports){
+},{"underscore":3}],3:[function(require,module,exports){
 (function (global){
 //     Underscore.js 1.9.1
 //     http://underscorejs.org
@@ -2762,4 +2019,4 @@ exports.scale_to = function(geom_obj, desired_x, desired_y, desired_z) {
 }());
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[2]);
+},{}]},{},[1]);

@@ -8,3 +8,7 @@
 out
 gen
 .idea/
+.DS_Store
+3d-src/.DS_Store
+3d-src/dist/.DS_Store
+3d-src/node_modules/
