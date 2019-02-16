@@ -416,7 +416,7 @@ create_enclosure = (params)->
   )
 
   trimming_box_1 = cube(
-    {size:[box_size, cut_length, middle_section_height], center:[true, true, false]}
+    {size:[box_size, cut_length, middle_section_height + 2*rim_radius], center:[true, true, false]}
   ).translate(
     [0, -(box_size-cut_length)/2 , lid_layer_height]
   )
@@ -429,7 +429,7 @@ create_enclosure = (params)->
 
   cut_length = box_size - cut_length + 2*params.clearance
   trimming_box_2 = cube(
-    {size:[box_size, cut_length, middle_section_height], center:[true, true, false]}
+    {size:[box_size, cut_length, middle_section_height + 2*rim_radius], center:[true, true, false]}
   ).translate(
     [0, (box_size-cut_length)/2 , lid_layer_height]
   )

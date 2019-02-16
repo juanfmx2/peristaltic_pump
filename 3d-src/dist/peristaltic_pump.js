@@ -592,7 +592,7 @@ create_enclosure = function(params) {
   z_distance = box_height - hex_nut_hole_dims.z / 2 - distance_to_wall;
   middle_section_box = difference(middle_section_box, screw_rail.rotateX(90).translate([x_distance, 0, z_distance]), screw_rail.rotateX(90).translate([-x_distance, 0, z_distance]), hex_nut_hole.translate([x_distance, distance_to_nut + 2 * distance_to_wall + params.bearing_nut_height, z_distance]), hex_nut_hole.translate([-x_distance, distance_to_nut + 2 * distance_to_wall + params.bearing_nut_height, z_distance]), hex_nut_hole.translate([x_distance, distance_to_nut - 2 * distance_to_wall, z_distance]), hex_nut_hole.translate([-x_distance, distance_to_nut - 2 * distance_to_wall, z_distance]));
   trimming_box_1 = cube({
-    size: [box_size, cut_length, middle_section_height],
+    size: [box_size, cut_length, middle_section_height + 2 * rim_radius],
     center: [true, true, false]
   }).translate([0, -(box_size - cut_length) / 2, lid_layer_height]);
   middle_section_box_1 = difference(middle_section_box, trimming_box_1);
@@ -603,7 +603,7 @@ create_enclosure = function(params) {
   enclosure_parts.push(middle_section_box_1);
   cut_length = box_size - cut_length + 2 * params.clearance;
   trimming_box_2 = cube({
-    size: [box_size, cut_length, middle_section_height],
+    size: [box_size, cut_length, middle_section_height + 2 * rim_radius],
     center: [true, true, false]
   }).translate([0, (box_size - cut_length) / 2, lid_layer_height]);
   middle_section_box_2 = difference(middle_section_box, trimming_box_2);
